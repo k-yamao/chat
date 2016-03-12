@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html lang="ja" ng-app="mimicry-app">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+    //ons.bootstrap();
+    //ons.disableAutoStatusBarFill();  // (Monaca enables StatusBar plugin by default)
+  </script>
+    <script src="js/app.js"></script>
+</head>
+<body>    
+    <div ng-controller="mainCtrl">
+        <ons-tabbar var="tabbar">
+            <ons-tabbar-item
+                icon="home"
+                label="HOME"
+                page="navigator.html"
+                active="true"
+                ng-click="tabPush(0);">
+                </ons-tabbar-item>
+            <ons-tabbar-item
+                icon="comment"
+                label="REC"
+                page="page2.html"
+                ng-click="tabPush(1);">
+                </ons-tabbar-item>
+            <ons-tabbar-item
+                icon="tags"
+                label="MY"
+                page="page3.html"
+                ng-click="tabPush(2);">
+                </ons-tabbar-item>
+            <!--ons-tabbar-item
+                icon="gear"
+                label="Settings"
+                page="page3.html"></ons-tabbar-item-->
+        </ons-tabbar>
+    </div>
+</body>
+</html>

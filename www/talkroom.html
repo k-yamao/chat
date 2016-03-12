@@ -1,0 +1,69 @@
+<ons-page id="talk-page">
+    <ons-toolbar>
+        <div class="left"></div>
+        <div class="center">ルームリスト</div>
+        <div class="right"></div>
+    </ons-toolbar>
+    <ons-list class="" modifier="">
+        <ons-list-item modifier="chevron" class="list-item-container" ng-repeat="room in rooms" ng-click="startTalk(room.roomID)">
+            <div ng-repeat="r in room.peoples" ng-show="r.peopleID != people.peopleID">
+                <div class="list-item-left">
+                    <img ng-src="{{r.imageURL}}" class="avator">
+                </div>
+                <div class="list-item-right">
+                    <div class="list-item-content">
+                        <div class="name">{{r.nicname}}
+                            <span class="lucent"></span>
+                        </div>
+                        <span class="desc">{{r.appeal}}</span>
+                    </div>
+                </div>
+            </div>
+        </ons-list-item>
+    </ons-list>
+</ons-page>
+<style> 
+.list-item-container {
+  line-height: 1;
+  font-size: 14px;
+  padding: 15px 0px 15px 15px;
+}
+
+.list-item-left {
+  width: 60px;
+  margin-right: -60px;
+  float: left;
+}
+
+.list-item-right {
+  width: 100%;
+  float: right;
+}
+
+.list-item-content {
+  margin-left: 50px;
+  margin-right: 30px;
+}
+
+.avator {
+  width: 40px;
+  height: 40px;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+.name {
+  font-weight: 500;
+  line-height: 16px;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.desc {
+  line-height: 16px;
+}
+
+.lucent {
+  opacity: 0.4;
+}
+</style>

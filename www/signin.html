@@ -1,0 +1,51 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>back</ons-back-button></div>
+    <div class="center">サインイン</div>
+</ons-toolbar>
+<ons-page>
+  
+  <div class="login-form">
+
+    <input type="email" class="text-input--underbar" placeholder="Email" value="" ng-model="people.mail">
+    <input type="password" class="text-input--underbar" placeholder="Password" value="" ng-model="people.password">
+    <br><br>
+    <ons-button modifier="large" class="login-button" ng-click="signin()">サインイン</ons-button>
+    <br><br>
+    <ons-button modifier="quiet" class="forgot-password">パスワードを忘れた場合はこちら</ons-button>
+    <ons-button modifier="quiet" class="forgot-password" ng-click="movePage(page.signup);">新規登録</ons-button>
+  </div>
+
+</ons-page>
+<ons-modal var="modal">
+  <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+  <br>
+  <br> Please wait.
+</ons-modal>
+
+<style>
+.login-form {
+  text-align: center;
+  width: 80%;
+  margin: 60px auto 0;
+}
+
+input[type=email], input[type=password] {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.login-button {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.forgot-password {
+  display: block;
+  margin: 8px auto 0 auto;
+  font-size: 14px;
+}
+</style>

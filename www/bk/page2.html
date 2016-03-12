@@ -1,0 +1,87 @@
+<ons-toolbar>
+    <div class="center">REC</div>
+</ons-toolbar>
+
+<div class="container">
+    <ons-list modifier="inset" style="margin-top: 10px;">
+        <ons-list-item class="to-wrapper mrec-list">
+            <ons-row class="item-c">
+                <ons-button ng-click="captureAudio();" modifier="large">録音する</ons-button>
+            </ons-row>
+        <!--</ons-list-item>-->
+        <!--ons-list-item id="mrec" class="mrec-center" ng-show="mrec.recfile"-->
+        <!--<ons-list-item id="mrec" class="mrec-center"> -->
+            <ons-row class="item-c" ng-show="playTime">
+                <ons-col align="center">
+                    <ons-button modifier="outline" ng-hide="mrec.btn_status" ng-click="playRec(mrec.recfile)">&nbsp;&nbsp;PLAY&nbsp;&nbsp;</ons-button>
+                    <ons-button modifier="outline" ng-show="mrec.btn_status" ng-click="pauseRec()">&nbsp;PAUSE&nbsp;</ons-button>
+                </ons-col>
+                <ons-col align="center">
+                    <ons-button modifier="outline" ng-click="stopRec()">&nbsp;&nbsp;STOP&nbsp;&nbsp;</ons-button>
+                </ons-col>
+            </ons-row>
+            <ons-row class="item-c" ng-show="playTime">
+                <ons-col class="range-wrapper">
+                    {{playPosition|number:2}}/{{playTime|number:2}}
+                </ons-col>
+            </ons-row>
+            <!-- <ons-row class="item-c">
+                <ons-col class="range-wrapper">
+                    <input type="range" ng-model="playRange" ng-value="playRange" ng-change="playChange()" class="range">
+                </ons-col>
+            </ons-row>
+            -->
+        </ons-list-item>
+        <ons-list-item class="mrec-list">
+            <img class="mrec-img" ng-click="cnffirm()" id="picture" ng-src="{{mrec.imgfile}}" src="http://file.local-c.com/uploads/mimicry/noimage.png" alt="" />
+        </ons-list-item>
+        
+        <ons-list-item>
+          <input type="text" ng-model="mrec.title" class="text-input text-input--transparent mrec-text" placeholder="ものまねタイトル">
+        </ons-list-item>
+        <ons-list-item>
+          <input type="text" ng-model="mrec.nicname" class="text-input text-input--transparent mrec-text" placeholder="ニックネーム">
+        </ons-list-item>
+        <ons-list-item>
+                <ons-button ng-click="Post();" class="mrec-regist" modifier="large--cta ">登録する</ons-button>
+        </ons-list-item>
+        <ons-list-item>
+            <ons-row class="center">
+                <!--ons-col width="33%">
+                    <ons-button modifier="quiet" class="" ng-click="terms();">利用規約</ons-button>
+                </ons-col>
+                <ons-col width="66%">
+                    <ons-button modifier="quiet" class="" ng-click="privacy();">プライバシーポリシー</ons-button>
+                </ons-col-->
+                <ons-col align="center">
+                    <ons-button modifier="quiet" class="" ng-click="privacy();">プライバシーポリシー</ons-button>
+                </ons-col-->
+        </ons-list-item>
+    </ons-list>
+    <!--div style="padding: 10px 9px">
+        <ons-button ng-click="Post();" modifier="large--cta ">登録する</ons-button>
+        
+    </div-->
+    <ons-template id="list.html">
+        <ons-dialog var="" cancelable>
+            <ons-list>
+                <ons-list-item modifier="tappable" ng-click="dialog.hide()" >
+                    カメラを起動
+                </ons-list-item>
+                <ons-list-item modifier="tappable" ng-click="closed(1,2)" >
+                    ライブラリから選択                    
+                </ons-list-item>
+            </ons-list>
+        </ons-dialog> 
+    </ons-template>
+    <ons-modal var="recmodal">
+        <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+        <br><br>
+        Please wait.
+    </ons-modal>
+    <ons-modal var="modal">
+        <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+        <br><br>
+        Please wait.
+    </ons-modal>
+</div>

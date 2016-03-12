@@ -1,0 +1,111 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>Back</ons-back-button></div>
+    <div class="center">プロフィール</div>
+    <div class="right"></div>
+</ons-toolbar>
+<ons-page>
+    <div class="profile-card">
+        <img ng-src="{{profilePeople.imageURL}}" class="profile-image">
+        <div class="profile-name">{{profilePeople.nicname}}</div>
+        <div class="profile-desc">{{profilePeople.appeal}}</div>
+  </div>
+
+      <ons-list>
+        <ons-list-item>
+          <ons-row>
+            <ons-col class="info-col">
+              <div class="info-num">87</div>
+              <div class="info-unit">Comments</div>
+            </ons-col>
+            <ons-col class="info-col">
+              <div class="info-num">40</div>
+              <div class="info-unit">Following</div>
+            </ons-col>
+            <ons-col class="info-col">
+              <div class="info-num">38</div>
+              <div class="info-unit">Followers</div>
+            </ons-col>
+          </ons-row>
+        </ons-list-item>
+      </ons-list>
+
+      <ons-list modifier="inset" style="margin-top: 10px">
+        <ons-list-item modifier="chevron">
+          Write a comment
+        </ons-list-item>
+
+        <ons-list-item modifier="chevron">
+          See details
+        </ons-list-item>
+
+        <ons-list-item modifier="chevron">
+          Save to the list
+        </ons-list-item>
+
+      </ons-list>
+
+      <br>
+
+
+    </ons-page>
+<style>
+.profile-card {
+  width: 100%;
+  text-align: center;
+  color: white;
+  padding: 30px 0;
+  line-height: 1.4;
+  background-color: #33393c;
+  text-shadow: rgba(0, 0, 0, 0.4) 0px 1px 0px;
+}
+
+.profile-image {
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  background-color: black;
+  border 1px solid white;
+  box-shadow:rgba(0, 0, 0, 0.2) 0px 2px 0px 0px;
+  -webkit-box-shadow:rgba(0, 0, 0, 0.2) 0px 2px 0px 0px;
+}
+
+.profile-name {
+  margin: 20px 0 0 0;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.profile-id {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.profile-desc {
+  font-size: 15px;
+  opacity: 0.6;
+  width: 90%;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.info-col {
+  height: 60px;
+  line-height: 1;
+  padding: 12px 0 12px 4px;
+}
+
+.info-num {
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.info-unit {
+  margin-top: 6px;
+  font-size: 14px;
+  opacity: 0.4;
+}
+
+</style>

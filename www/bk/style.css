@@ -1,0 +1,99 @@
+.container {
+  font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro",Osaka, "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic","Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+}
+
+.col {
+    overflow: hidden;
+    padding: 2px;
+}
+.item-i {
+    text-align: center;
+}
+.item-r {
+    height: 35px;
+    line-height: 35px;
+    margin-top: -10px;
+}
+.item-h{
+    font-size: 60%;
+    height: 35px;
+    line-height: 40px;
+    text-align: left;
+    padding: 0px;
+    margin: 0px;
+}
+.item-d{
+    font-size: 90%;
+}
+.item-c{
+    padding: 10px;    
+}
+
+.text-left {
+    text-align: left;
+}
+
+.mrec-list {
+    text-align: center;
+}
+.mrec-img {
+    margin-top:4px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 150px;
+}
+.tool-bar{
+    width: 100%;
+}
+.sort-bar2 {
+    
+    width:100%;
+}
+.sort-bar {
+    width: 90%;
+    margin: auto;
+}
+.more-btn {
+    margin-bottom: 5px;
+}
+.list__item {
+    padding-top:5px;
+}
+.list-btn {
+    width: 100%;
+    font-size: 9pt;
+}
+.display-none{
+    display: none;
+}
+.display-block{
+    display: block;
+}
+
+.play-act {
+ background-color: rgba(137, 98, 237, 0.2);
+}
+.mrec-text {
+    width: 100%;
+    margin-top:4px;
+}
+.mrec-regist {
+    margin: 10px 15px 15px 0px;
+}
+.post-btn {
+    padding-bottom: 50px;
+}
+.rec-contents {
+    height: 100%;
+    background-color: #FFFFFF;
+}
+
+.eene-btn {
+    font-size: 6pt;
+    width: 100%;
+    background-color: rgba(137, 98, 237, 0.2);
+    border: 1px solid #8962ed;
+    color: #8962ed;
+    opacity: 1;
+}

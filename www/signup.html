@@ -1,0 +1,86 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>back</ons-back-button></div>
+    <div class="center">Sign Up</div>
+    <!--div class="right"><ons-toolbar-button>Close</ons-toolbar-button></div-->
+</ons-toolbar>
+<div class="formarea">
+    <form novalidate name="signForm">    
+        <div class="form-row">
+          <input type="email" class="text-input--underbar width-full" name="mail" ng-model="people.mail" placeholder="Mail" required ng-pattern="" value="">
+        </div>
+        <div class="form-row">
+          <input type="password" class="text-input--underbar width-full" name="password" ng-model="people.password" placeholder="Password" required ng-minlength="6" ng-maxlength="20" value="">
+        </div>
+        <div class="form-row">
+          <input type="text" class="text-input--underbar width-full" name="nicname" ng-model="people.nicname" required placeholder="Nicname" value="">
+        </div>
+        <div class="lucent" ng-show="signForm.mail.$error.required" ng-if="signForm.mail.$touched">
+          <p class="note">メールは必須です。</p>
+        </div>
+        <div class="lucent" ng-show="signForm.mail.$error.email" ng-if="signForm.mail.$touched">
+          <p class="note">メールアドレスは正しい形式で入力してください</p>
+        </div>
+
+        <div class="lucent" ng-show="signForm.password.$error.required" ng-if="signForm.password.$touched">
+          <p class="note">パスワードは必須です。</p>
+        </div>
+        <div class="lucent" ng-show="signForm.password.$error.minlength" ng-if="signForm.password.$touched">
+          <p class="note">パスワードは６文字以上入力してください</p>
+        </div>
+        <div class="lucent" ng-show="signForm.password.$error.maxlength" ng-if="signForm.password.$touched">
+          <p class="note">パスワードは20文字以内で入力してください</p>
+        </div>
+        <div class="lucent" ng-show="signForm.nicname.$error.required" ng-if="signForm.nicname.$touched">
+          <p class="note">ニックネームは必須です。</p>
+        </div>
+        <div class="vspc form-row">
+          <ons-button type="submit" modifier="large--cta" ng-click="singup()">登録</ons-button>
+        </div>
+    </form>
+    <!-- <pre>{{people|json}}</pre> -->
+</div>
+<ons-modal var="modal">
+  <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+  <br>
+  <br> Please wait.
+</ons-modal>
+
+
+<style>
+.form-row {
+  margin: 4px;
+}
+
+.width-full {
+  width: 100%;
+}
+
+.width-half {
+  width: 48%;
+}
+
+.lucent {
+  opacity: 0.4;
+}
+
+.note {
+  margin: 12px 8px;
+  font-size: 13px;
+}
+
+.vspc {
+  margin-top: 20px;
+}
+
+.formarea {
+  width: 90%;
+  margin: 50px auto 0px auto;
+}
+
+input[type=text],
+input[type=password] {
+  height: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+</style>

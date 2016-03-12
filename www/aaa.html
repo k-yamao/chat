@@ -1,0 +1,59 @@
+<ons-page ng-controller="MyCtrl">
+  <ons-toolbar>
+    <div class="center">Lazy Repeat</div>
+  </ons-toolbar>
+  <ons-list>
+    <ons-list-item modifier="chevron" class="item" ons-lazy-repeat="MyDelegate">
+      <ons-row>
+        <ons-col width="80px">
+          <img ng-src="http://lorempixel.com/60/60/?{{item.rand}}" class="item-thum"></img>
+        </ons-col>
+        <ons-col>
+          <header>
+            <span class="item-title">{{item.title}}</span>
+            <span class="item-label">{{item.label}}</span>
+          </header>
+          <div ng-show="item.desc==''">
+            <p><span style='opacity: 0.7;'><ons-icon icon='fa-spinner' spin='true'></ons-icon> Loading bacon...</p></span></div>
+          <p class="item-desc">{{ item.desc }}</p>
+        </ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+
+<style>
+.item {
+  padding: 10px;
+  line-height: 1;
+  height: 91px;
+  overflow: hidden;
+}
+
+.item-thum {
+  background-color: #ccc;
+  width: 70px;
+  height: 70px;
+  border-radius: 4px;
+}
+
+.item-title {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.item-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.3;
+  margin: 4px 0 0 0;
+  padding: 0 30px 0 0;
+  max-height: 30px;
+}
+
+.item-label {
+  font-size: 12px;
+  color: #999;
+  float: right;
+}
+</style>
+</ons-page>

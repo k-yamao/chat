@@ -1,0 +1,113 @@
+<div class="container">
+    <ons-toolbar>
+        <div class="center">
+            <!--ons-toolbar style="height: 90px;"-->
+            <div class="button-bar sort-bar">
+                <div class="button-bar__item sort-btn">
+                    <input type="radio" name="navi-segment-a" ng-click="sortChange(2, true);" ng-model="apiParam.sort" ng-checked="apiParam.sort == 2">
+                    <button class="button-bar__button">NEW</button>
+                </div>
+                <div class="button-bar__item sort-btn">
+                    <input type="radio" name="navi-segment-a" ng-click="sortChange(1, true);" ng-model="apiParam.sort" ng-checked="apiParam.sort == 1">
+                    <button class="button-bar__button">RANKING</button>
+                </div>
+                <!--div class="button-bar__item sort-btn">
+                    <input type="radio" name="navi-segment-a" ng-click="sortChange(9, true);" ng-model="apiParam.sort" ng-checked="apiParam.sort == 9">
+                    <button class="button-bar__button">MY</button>
+                    
+                </div-->
+            </div>
+            
+            
+        </div>
+    </ons-toolbar>
+
+    <!--div class="button-bar nav-bar" style="width:280px;margin:0 auto;">
+        <div class="button-bar__item">
+            <input type="radio" name="navi-segment-a" ng-click="sortChange(2, true);" ng-model="apiParam.sort" ng-checked="apiParam.sort == 2">
+            <button class="button-bar__button">NEW</button>
+        </div>
+        <div class="button-bar__item">
+            <input type="radio" name="navi-segment-a" ng-click="sortChange(1, true);" ng-model="apiParam.sort" ng-checked="apiParam.sort == 1">
+            <button class="button-bar__button">RANKING</button>
+        </div>
+        <div class="button-bar__item">
+            <input type="radio" name="navi-segment-a" ng-click="sortChange(9, true);" ng-model="apiParam.sort" ng-checked="apiParam.sort == 9">
+            <button class="button-bar__button">MY</button>
+        </div>
+    </div-->
+    <ons-list ng-show="mimicryList.length" id="list">
+    <!--ons-list ng-show="mimicryList.length" style="margin-top:45px;"-->
+        <ons-list-header>
+            <div class="pull-left">{{count.from}}-{{count.to}}件</div><div class="pull-right">全{{count.all}}件</div>
+        </ons-list-header>
+        <ons-list-item ng-repeat="mimicry in mimicryList" modifier="" ng-controller="mimicryCtrl">
+            <ons-row>
+                <ons-col width="40%" class="item-i">
+                    <img src="{{mimicry.imgpath}}" alt="" width="110px" height="110px" />
+                </ons-col>
+                <ons-col>
+                    <ons-row class="item-r">
+                        <ons-col width="35%" class="item-h">ランキング</ons-col>
+                        <ons-col class="item-d">{{mimicry.rank}}位</ons-col>
+                    </ons-row>
+                    <ons-row class="item-r">
+                        <ons-col width="35%" class="item-h">タイトル</ons-col>
+                        <ons-col class="item-d">{{mimicry.title|limitTo:7}}{{mimicry.title.length > 7 ? '...' :''}}</ons-col>
+                    </ons-row>
+                    <ons-row class="item-r">
+                        <ons-col width="35%" class="item-h">ニックネーム</ons-col>
+                        <ons-col class="item-d">{{mimicry.nicname|limitTo:7}}{{mimicry.nicname.length > 7 ? '...' : ''}}</ons-col>
+                    </ons-row>
+                    <ons-row class="item-r">
+                        <ons-col width="35%" class="item-h">登録日</ons-col>
+                        <ons-col class="item-d">{{mimicry.updateDate|substr:0:4 }}-{{mimicry.updateDate|substr:4:6}}-{{mimicry.updateDate|substr:6:8}}<ons-col>
+                    </ons-row>
+                </ons-col>
+            </ons-row>
+            <ons-row class="item-c">
+                <ons-col align="center">
+                    <ons-button modifier="outline" class="list-btn" ng-show="!isPlay(mimicry.rankingId)" ng-click="play(mimicry.fileurl, mimicry.rankingId)">PLAY</ons-button>
+                    <ons-button modifier="outline" class="list-btn" ng-show="isPlay(mimicry.rankingId)" ng-click="pause()">PAUSE</ons-button>
+                </ons-col>
+                <ons-col align="center">
+                    <ons-button modifier="outline" class="list-btn" ng-click="stop()">STOP</ons-button>
+                </ons-col>
+                <ons-col align="center" ng-hide="apiParam.sort == 9">
+                    <ons-button modifier="outline" ng-click="eeneOn(mimicry.rankingId)" ng-hide="mimicry.eeneflg" class="list-btn">ええね</ons-button>
+                    <ons-button modifier="outline" ng-click="eeneClear(mimicry.rankingId)" ng-show="mimicry.eeneflg" class="eene-btn" class="list-btn">ええね取消</ons-button>
+                </ons-col>
+                <ons-col align="center">
+                    <ons-button modifier="outline" ng-click="share(mimicry.rankingId,mimicry.title,mimicry.nicname)" class="list-btn">SHARE</ons-button>
+                </ons-col>
+                <ons-col align="center" ng-show="apiParam.sort == 9">
+                    <ons-button modifier="outline" ng-click="delm(mimicry.rankingId)" class="list-btn">DELETE</ons-button>
+                </ons-col>
+                
+            </ons-row>
+            <ons-row class="item-a" ng-class="isCtrl({{mimicry.rankingId}})">
+                <ons-col align="center">
+                </ons-col>
+                <ons-col align="center">
+                    <div ng-show="sec">{{position|number:2}}/{{sec|number:2}}</div>
+                    <div ng-hide="sec"><ons-icon icon="ion-load-c" spin="true"></ons-icon></div>
+                </ons-col>
+                
+                <ons-col align="center">
+                    <ons-icon icon="fa-flag" size="20px" fixed-width="false" style=""  ng-click="reportFlag(mimicry.rankingId)"></ons-icon>
+                </ons-col>
+            </ons-row>
+     </ons-list-item>
+     <ons-list-item ng-show="getMore()">
+        <ons-button modifier="large--cta" class="more-btn" ng-click="moreList()">MORE</ons-button>
+     </ons-list-item>
+     
+    </ons-list>
+    <p ng-hide="mimicryList.length"><!--データの取得に失敗しました。--></p>
+    <ons-modal var="modal">
+        <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+        <br><br>
+        Please wait.
+    </ons-modal>
+
+</div>

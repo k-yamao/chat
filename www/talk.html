@@ -1,0 +1,254 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>back</ons-back-button></div>
+    <div class="center">トーク</div>
+    <div class="right"></div>
+</ons-toolbar>
+<ons-page class="timeline-page">
+    <ons-list class="timeline-list" modifier="">
+        <ons-list-item class="timeline-li" modifier="" ng-repeat="talk in talkList" style="border-bottom: initial;">
+            <!--ons-row ng-show="talk.peopleID != people.peopleID"-->
+            <ons-row ng-class="talkRowClass(talk.peopleID)">
+                <ons-col width="50px" class="img-col">
+                    <img ng-src="{{talk.people.imageURL}}" class="timeline-image">
+                    <div ng-class="talkDateClass(talk.peopleID)" >{{talk.created|customDate4|nl2br}}</div>
+                </ons-col>
+                <ons-col class="msgcol">
+                    <div ng-class="talkFrameClass(talk.peopleID)">
+                        <div class="msgdiv" style="" ng-bind-html="talk.msg|nl2br"></div>
+                    </div>
+                    
+                </ons-col>
+                <!--ons-col class="datetime1">
+                    <div ng-class="talkDateClass(talk.peopleID)">{{talk.created|customDate4}}</div>
+                </ons-col-->
+            </ons-row>
+            <!--ons-row ng-show="talk.peopleID == people.peopleID">
+                <ons-col class="datetime2">
+                    <div class="timeline-date2">{{talk.created|customDate4}}</div>
+                </ons-col>
+                <ons-col class="msgcol">
+                    <div class="msgFrame">
+                        <div class="msgdiv" style="" ng-bind-html="talk.msg|nl2br"></div>
+                    </div>
+                </ons-col>
+                <ons-col width="50px" class="img-col2">
+                    <img ng-src="{{talk.people.imageURL}}" class="timeline-image" >
+                </ons-col>
+            </ons-row-->
+        </ons-list-item>
+      
+    </ons-list>
+
+    <div id="text-message-box-container">
+        <textarea id="text-message-box" autocomplete="off" placeholder="" ng-model="talk.msg"></textarea>
+        <button class="button" ng-click="sendMsg();">送信</button>
+    </div>
+    
+    
+    
+</ons-page>
+<style> 
+.row-etc {
+    flex-direction:row-reverse;
+    -webkit-flex-direction: row-reverse; /* Safari対応 */
+
+}
+.row-me {
+
+
+}
+.timeline-page {
+/*
+    width: 100%;
+    position: relative;
+    height: auto !important;
+    height: 100%;
+    min-height: 100%;    
+*/
+}
+
+.datetime{
+    width: 50px;
+}
+
+.datetime1{
+    width: 50px;
+    margin-right: auto;
+}
+.datetime2{
+    width: 50px;
+    margin-left: auto;
+}
+.msgcol {
+    width: auto;
+    display: inline-block;
+    max-width: 65%;
+}
+.msgFrame1 {
+    background-color: #fff;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+    color: #1f1f21;
+    overflow: hidden;
+    height: 100%;
+    display: inline-block;
+    max-width: 100%;
+    float: left;
+}
+.msgFrame2 {
+    background-color: #fff;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+    color: #1f1f21;
+    overflow: hidden;
+    height: 100%;
+    display: inline-block;
+    max-width: 100%;
+    float: right;
+}
+.msgdiv {
+    -webkit-user-select: auto;
+    text-align:left;
+    opacity:0.4; 
+    word-break: break-all; 
+    padding: 10px 5px 10px 5px;
+    font-size: 14px;
+}
+.timeline-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 49px;
+    z-index: 0;
+}
+#text-message-box-container {
+    font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 17px;
+    display: table;
+    table-layout: fixed;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    height: 49px;
+    background-color: #222;
+    border-top: 1px solid rgba(0,0,0,0);
+    width: 100%;
+}
+#text-message-box-container textarea {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 80%;
+      height: 45px;
+      border: none;
+      font-size: 15px;
+}
+#text-message-box-container button {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      width: 19%;
+      height: 49px;
+      border: none;
+      font-size: 12pt;
+    -webkit-border-radius: 3px;
+    border-radius: 0px
+}
+#text-message-box-container #btn-fileupload {
+      position: absolute;
+      right: 10px;
+      top: 5px;
+      z-index: 110;
+      font-size: 20pt;
+      cursor: pointer; 
+}
+.reply-notification {
+  position: absolute;
+  top: 28px;
+  font-size: 10px;
+  font-weight: 600;
+  height: 13px;
+  line-height: 13px;
+  padding: 0 4px;
+  min-width: 13px;
+  margin-left: 18px;
+}
+
+.tab-icon {
+  font-size: 28px;
+  vertical-align: -4px;
+}
+
+.timeline {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  
+}
+.timeline-list {
+  padding-bottom: 50px;
+}
+.timeline-li {
+  line-height: 1;
+  padding: 10px;
+  border: none;
+  
+}
+.list__item:first-child {
+     border-bottom: none;
+}
+.img-col {
+    margin : 0 0 0 10px;
+}
+ 
+.timeline-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+}
+
+.timeline-date1 {
+  float: left;
+  font-size: 10px;
+  opacity: 0.35;
+  //margin: 10px 10px 10px 10px;
+}
+.timeline-date2 {
+  float: left;
+  font-size: 10px;
+  opacity: 0.35;
+  //margin: 10px 10px 10px 10px;
+}
+
+.timeline-from {
+  margin: 10px 0 6px 0;
+}
+
+.timeline-name {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.timeline-id {
+  font-size: 14px;
+  opacity: 0.4;
+}
+
+.timeline-message {
+  margin-top: 4px;
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1.15;
+}
+</style>
