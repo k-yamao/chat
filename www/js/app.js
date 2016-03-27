@@ -18,9 +18,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         console.log("document ready");
         
         // オンラインになったとき、このイベントが発火
-        document.addEventListener("online", function(){console.log('オンラインtest');}, false);
+        document.addEventListener("online", function(){console.log('オンライン');}, false);
         //アプリがオフラインになったときに、このイベントが発火
-        document.addEventListener("offline", function(){console.log('オフラインtest');}, false);
+        document.addEventListener("offline", function(){console.log('オフライン');}, false);
         
         
         // デバイスIDを取得し、ものまねリストを取得する
