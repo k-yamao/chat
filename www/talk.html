@@ -5,7 +5,7 @@
 </ons-toolbar>
 <ons-page class="timeline-page">
     <ons-list class="timeline-list" modifier="">
-        <ons-list-item class="timeline-li" modifier="" ng-repeat="talk in talkList" style="border-bottom: initial;">
+        <ons-list-item class="timeline-li" modifier="noborder" ng-repeat="talk in talkList" style="border-bottom: initial;">
             <!--ons-row ng-show="talk.peopleID != people.peopleID"-->
             <ons-row ng-class="talkRowClass(talk.peopleID)">
                 <ons-col width="50px" class="img-col">

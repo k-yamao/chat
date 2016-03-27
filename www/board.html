@@ -20,9 +20,9 @@
     </span>
     </ons-pull-hook>
     <ons-scroller  when-scrolled="loadMore()" style="height:100%">
-        <ons-list-item modifier="" class="item" ng-repeat="item in boards">
+        <ons-list-item modifier="noborder" class="item" ng-repeat="item in boards">
            
-            <ons-row>
+            <ons-row  modifier="noborder" >
                 <ons-col width="60px"> 
                     <!--div class="item-thum"></div-->
                     <img ng-src="{{item.people.imageURL}}" class="thumbnail" ng-click="pushProfile(item.people)"/>
