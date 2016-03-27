@@ -1,0 +1,111 @@
+<html>
+
+<head>
+  <script src="https://code.angularjs.org/1.3.0/angular.js"></script>
+  <script src="http://onsenui.io/OnsenUI/build/js/onsenui.js"></script>
+  <script src="http://marak.com/faker.js/js/faker.js"></script>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/OnsenUI/OnsenUI/1.2.2/build/css/onsenui.css" />
+  <link rel="stylesheet" href="https://cdn.rawgit.com/OnsenUI/OnsenUI/1.2.2/build/css/onsen-css-components.css" />
+</head>
+
+<body ng-controller="ListCtrl">
+
+  <ons-navigator animation="slide" var="app.navi">
+    <ons-page>
+      <ons-toolbar class="toolbar-black">
+        <div class="center">OnsenUI Infinite Scroll Example</div>
+      </ons-toolbar>
+
+      <ons-scroller infinit-scroll-enable="canWeLoadMoreContent()" can-load="true" on-scrolled="populateList()" threshold="20" style="height:100%">
+
+          <ons-list-item class="list-item-container" ng-repeat="list in _list">
+            <ons-row style="padding: 10px 10px 5px 0;">
+              <ons-col width="145px">
+                <img ng-src="{{list.image}}" class="thumbnail">
+              </ons-col>
+              <ons-col>
+                <div style="height: 30px;">
+                  <h4>{{list.name}}</h4>
+                </div>
+                <div style="height: 30px; font-size: 13px;">
+                  <i class="fa fa-map-marker"></i> {{list.address}}
+                </div>
+                <div style="height: 30px; font-size: 13px;">
+                  <i class="fa fa-phone"></i> {{list.phone}}
+                </div>
+              </ons-col>
+              <ons-col width="40px"></ons-col>
+            </ons-row>
+          </ons-list-item>
+
+          <ons-list-item ng-show="isLoading">
+            <div class="loader-container">
+              <ons-icon icon="spinner" size="40px" spin="true"></ons-icon>
+            </div>
+          </ons-list-item>
+
+      </ons-scroller>
+
+    </ons-page>
+  </ons-navigator>
+    <style>
+        h4 {
+          display: block;
+          -webkit-margin-before: 0;
+          -webkit-margin-after: 0;
+          -webkit-margin-start: 0px;
+          -webkit-margin-end: 0px;
+        }
+        .loader-container {
+           width: 40px; 
+           margin: 10px auto;
+           vertical-align: middle;
+        }
+    </style>
+    <script>
+        var module = ons.bootstrap('my-app', ['onsen']);
+
+        module.controller('ListCtrl', function($scope, $timeout) {
+
+          $scope._list = [];  
+          $scope.isLoading = false;
+
+          $scope.populateList = function() {
+            console.log($scope.isLoading);
+            if($scope.isLoading) return;
+
+             $timeout(function(){
+                for (var i = 0; i <= 9; i++) {
+
+                   var firstName = "fn";
+                      var lastName = "ln";
+
+                      $scope._list.push({ name: firstName + " " + lastName, 
+                                          address: "a",
+                                          phone: "p",
+                                          image: "https://s3.amazonaws.com/uifaces/faces/twitter/matt3224/128.jpg"
+                      });
+
+                }    
+                console.log($scope._list.length);
+                 $scope.isLoading = false;
+             },1000);
+
+             $timeout(function() {
+               $scope.isLoading = true;  
+             });    
+          }
+
+          $scope.canWeLoadMoreContent = function() {
+
+            console.log($scope._list.length);
+            console.log(($scope._list.length > 49));
+            return ($scope._list.length > 49) ? false : true;
+          }  
+
+          $scope.populateList();
+
+        });
+    </script>
+</body>
+</html>

@@ -19,8 +19,9 @@
     <span ng-switch-when="action"><ons-icon size="35px" spin="true" icon="ion-load-d"></ons-icon> Loading data...</span>
     </span>
     </ons-pull-hook>
-    <ons-list>
+    <ons-scroller  when-scrolled="loadMore()" style="height:100%">
         <ons-list-item modifier="" class="item" ng-repeat="item in boards">
+           
             <ons-row>
                 <ons-col width="60px"> 
                     <!--div class="item-thum"></div-->
@@ -29,7 +30,7 @@
                 <ons-col>
                     <header class="profilebox">
                         <span class="item-title">{{item.people.nicname}}</span>
-                        <span class="item-label">{{item.created|customDate2}}</span>
+                        <span class="item-label">{{item.created|customDate4}}</span>
                     </header>
                     <div class="profilebox">
                         <i class="fa fa-map-marker"></i>{{item.people.pref}}&nbsp;
@@ -41,7 +42,9 @@
                 </ons-col>
             </ons-row>
             <ons-row>
-                <p class="item-desc"><span ng-show="item.inline != ''">＞{{item.inline}}<br></span>{{item.desc | customReadMore:0:60:'...' }}</p>
+                <p class="item-desc">
+                    <span ng-bind-html="item.desc | customReadMore:0:200:'...'| nl2br"></span>
+                </p>
             </ons-row>
             <ons-row>
                 <i class="fa fa-reply list-icon" ng-click="newBoardMsg(item);"></i>
@@ -51,11 +54,21 @@
                 <i class="fa fa-flag list-icon"></i>
             </ons-row>
         </ons-list-item>
-    </ons-list>
+        <ons-list-item ng-show="isLoading">
+            <div class="loader-container">
+              <ons-icon icon="spinner" size="40px" spin="true"></ons-icon>
+            </div>
+        </ons-list-item>
+    </ons-scroller>
 </ons-page>
   
   
-<style>  
+<style>
+.loader-container {
+   width: 40px; 
+   margin: 10px auto;
+   vertical-align: middle;
+}
 .list-item-container {
   line-height: 1;
   padding: 15px 0px 15px 15px;

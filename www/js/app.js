@@ -1,8 +1,13 @@
+//var module = ons.bootstrap('my-app', ['onsen']);
 var module = angular.module('chat-app', ['onsen']);
+//var module = ons.bootstrap('chat-app', ['onsen']);
 document.addEventListener ("deviceready", onDeviceReady, false);
 function onDeviceReady () {
 }
 
+
+
+//document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
 var host = "spika.local-c.com:3000";
 
@@ -10,11 +15,13 @@ var host = "spika.local-c.com:3000";
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, socket) {
 
     angular.element(document).ready(function () {
+        console.log("document ready");
         
         // オンラインになったとき、このイベントが発火
-        document.addEventListener("online", $scope.offlineEvent, false);
+        document.addEventListener("online", function(){console.log('オンラインtest');}, false);
         //アプリがオフラインになったときに、このイベントが発火
-        document.addEventListener("offline", $scope.onlineEvent, false);
+        document.addEventListener("offline", function(){console.log('オフラインtest');}, false);
+        
         
         // デバイスIDを取得し、ものまねリストを取得する
         monaca.getDeviceId(function(id){
@@ -46,6 +53,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 // 部屋リストを取得
                 $scope.initRoom();
                 
+                // 気になるリストを取得
+                $scope.initPick();
                 /**
                  * タブのイベントを設定
                  */
@@ -58,6 +67,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 
                 // アクティブなタブが変わる前
                 tabbar.on('prechange', function(event) {
+                    // ボードリストを取得
+                    //$scope.initBoard();
+               
+                    // 部屋リストを取得
+                    //$scope.initRoom();
+                
                     console.log('tab postchange');
                     
                 });
@@ -74,6 +89,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         profile : "/profile",
         signin  : "/signin",
         board   : "/board",
+        pick    : "/pick",
         room    : "/room",
         msg     : "/msg",
         list    : "/list"
@@ -179,9 +195,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             // 生年月日を年月日に設定
             $scope.people.birthDay = $scope.birth.year + $scope.birth.month + $scope.birth.day;    
         } else {
-            $scope.birth.year  = $scope.people.birthDay.substr(0,4);
-            $scope.birth.month = $scope.people.birthDay.substr(4,2);
-            $scope.birth.day   = $scope.people.birthDay.substr(6,2);
+            if ($scope.people.birthDay != "") {
+                $scope.birth.year  = $scope.people.birthDay.substr(0,4);
+                $scope.birth.month = $scope.people.birthDay.substr(4,2);
+                $scope.birth.day   = $scope.people.birthDay.substr(6,2);    
+            }
         }
     };   
     // アラートダイアログ
@@ -214,12 +232,13 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         insertTabelPeople   : 'INSERT INTO People (_id, peopleID, mail, password, nicname, imageURL, auth, token, sex, birthDay, pref, city, appeal, phrase, loging, updated, created) VALUES ("","","","","","","","","","","","","","","","","")',
         selectTabelPeople   : 'SELECT _id, peopleID, mail, password, nicname, imageURL, auth, token, sex, birthDay, pref, city, appeal, phrase, loging, updated, created FROM People',
         updateTabelPeople   : 'UPDATE People SET ',
-        deleteTabelPeople   : 'DELETE TABLE People'
+        deleteTabelPeople   : 'DELETE FROM People',
+        
     };
     
     /****************************************************************************************************
      * アプリ起動時、トップ画面 [top.html]
-     ****************************************************************************************************/
+     *******************************************************************/
     $scope.initApp = function() {
         /**
          * DBからメール、パスワード、ログイン期間を取得
@@ -313,8 +332,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.deletePeople = function(){
         // データベースオブジェクト取得
         $scope.db = $scope.getDB();
-        // スコアを更新
-        $scope.db.transaction($scope.exePeopleDelete, $scope.errorDB);
+        
+        // ピープルテーブルを削除
+        $scope.db.transaction($scope.exePeopleDelete, $scope.errorDB);    
+        
+        
     };
     // ピープルテーブルの更新
     $scope.exePeopleUpdate = function (tx) {
@@ -341,7 +363,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     // ピープルテーブルの削除
     $scope.exePeopleDelete = function (tx) {
-        tx.executeSql($scope.query.deleteTabelPeople);
+        tx.executeSql($scope.query.dropTabelPeople);
+        tx.executeSql($scope.query.createTabelPeople);
+        tx.executeSql($scope.query.insertTabelPeople);
     };
     $scope.dialogs = {};
     $scope.msgDialog = function(dlg) {
@@ -395,9 +419,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             $scope.errorDB
         );
     };
-    /****************************************************************************************************
+    
+    /******************************************************************    
      *  サインイン[signin.html]
-     ****************************************************************************************************/
+     *******************************************************************/
     $scope.signin = function(){
 
         // メールチェック
@@ -429,19 +454,19 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     $scope.people.mail         = data.data.mail;
                     $scope.people.password     = data.data.password;
                     $scope.people.nicname      = data.data.nicname;
-                    $scope.people.imageURL     = data.data.imageURL;
+                    $scope.people.imageURL     = angular.isUndefined(data.data.imageURL) ? 'http://file.local-c.com/uploads/mimicry/noimage.png' : data.data.imageURL;
                     $scope.people.nicname      = data.data.nicname;
-                    $scope.people.sex          = data.data.sex;
-                    $scope.people.birthDay     = data.data.birthDay;
-                    $scope.people.pref         = data.data.pref;
-                    $scope.people.appeal       = data.data.appeal;
-                    $scope.people.phrase       = data.data.phrase;
+                    $scope.people.sex          = angular.isUndefined(data.data.sex) ? '女性' : data.data.sex;
+                    $scope.people.birthDay     = angular.isUndefined(data.data.birthDay) ? '' : data.data.birthDay;
+                    $scope.people.pref         = angular.isUndefined(data.data.pref) ? '' : data.data.pref;
+                    $scope.people.appeal       = angular.isUndefined(data.data.appeal) ? '' : data.data.appeal;
+                    $scope.people.phrase       = angular.isUndefined(data.data.phrase) ? '' : data.data.phrase;
                     $scope.people.auth         = data.data.auth;
                     $scope.people.token        = data.data.token;
                     $scope.people.loging       = data.data.loging;
                     $scope.people.updated      = data.data.updated;
                     $scope.people.created      = data.data.created;
-                    $scope.people.boards       = data.data.boards;
+                    $scope.people.boards       = angular.isUndefined(data.data.boards) ? [] : data.data.boards;
                     // ピープルテーブルへ保存
                     $scope.updatePeople();
                     
@@ -461,9 +486,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
        }, 3000);
         
     };
-    /****************************************************************************************************
+    /******************************************************************    
      *  新規登録[signup.html]
-     ****************************************************************************************************/
+     *******************************************************************/
     $scope.singup = function(){
         
         // debug
@@ -524,9 +549,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     
                     // モーダル非表示
                     modal.hide();
-                    
-                    $scope.options.people = $scope.people;
-                    // プロフィールへ遷移
+
                     $scope.movePage($scope.page.profileEdit, $scope.options);
 
                 }
@@ -540,10 +563,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
        }, 3000);
         
     };
-    
-    /****************************************************************************************************
+    /******************************************************************
      *  プロフィール登録編集[profileEdit.html]
-     ****************************************************************************************************/
+     *******************************************************************/
     // プロフィールを保存
     $scope.saveProfile = function() {
 
@@ -765,15 +787,14 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // ダイアログ非表示
         $scope.dialog.hide();
     }
-   /****************************************************************************************************
+    /******************************************************************   
      * 部屋一覧画面[talkroom.html]
-     ****************************************************************************************************/
+     *******************************************************************/
     $scope.rooms  = [];
     $scope.talk   = {
         roomID : "",
         msg : "",
     }
-    $scope.tttt    = "gggggggggggggggg";
     $scope.roomID = "";
     $scope.status = {
         signin : false
@@ -785,12 +806,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             headers: { 'Content-Type': 'application/json' },
             data: null,
         }).success(function(data, status, headers, config) {
-            $scope.rooms = data.data;
-            
+
             // DB登録
-            
-            // 画面表示
-            console.log($scope.rooms);
+            $scope.rooms = data.data;
+
             
         }).error(function(data, status, headers, config) {
             // 登録済みのエラー
@@ -827,7 +846,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             title    : ""
         };
         
-       
+       console.log("roomID:" + roomID);
         
         if (roomID != "") {
 
@@ -837,6 +856,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             $scope.startTalk(roomID);
            
         } else {
+            
+           
+            
             // ルームIDを発行    
             $http({
                 method: 'POST',
@@ -844,25 +866,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 headers: { 'Content-Type': 'application/json' },
                 data: roomParam,
             }).success(function(data, status, headers, config) {
+                
 
-                // ルームテーブルへ保存
-                //$scope.initRoom();
+                // トークスタート（ルームIDを引き渡す）
+                $scope.startTalk(data.data.roomID);
                 
-                // ルームIDを保持
-                $scope.talk.roomID = data,data.data.roomID;
                 
-                // サインイン
-                $scope.startTalk($scope.roomID);
-                
-                // トーク画面へ遷移
-                $scope.movePage($scope.page.talk, $scope.options);
-
             }).error(function(data, status, headers, config) {
 
                 // モーダル非表示
                 modal.hide();
                 //     
-                $scope.alert('トークの取得に失敗しました。',true);
+                $scope.alert('ルームの作成に失敗しました。',true);
             });
 
         }
@@ -873,14 +888,15 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             roomID : roomID,
             peopleID: $scope.people.peopleID 
         });
+        
+        // トークへ遷移前にトーク一覧をクリア
+        $scope.talkList = [];
         // ルームIDを保持
         $scope.talk.roomID = roomID;
+        console.log($scope.talk.roomID);
         $scope.getMsgList($scope.talk.roomID, 0);
     };
     $scope.getMsgList = function(roomID, lastMsgID){
-        
-        // DBから取得？
-        
         
         // APIから取得？
         // トークリストを取得 
@@ -902,11 +918,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             });
 
             
+            // 最下部へスクロール
+            $scope.scrollMsg();
+            
             // トーク画面へ遷移
             $scope.movePage($scope.page.talk, $scope.options);
             
-            // 最下部へスクロール
-            $scope.scrollMsg();
 
         }).error(function(data, status, headers, config) {
 
@@ -956,7 +973,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 
             }
             
-        }, 1000);
+        }, 200);
     };
      $scope.isPeople = function(peopleID){
         return peopleID == $scope.people.peopleID;
@@ -979,17 +996,20 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             'msgFrame2' : $scope.isPeople(peopleID)
         }
     };
-    /****************************************************************************************************
+    
+    /******************************************************************
      *  ボード一覧[board.html] sboard
-     ****************************************************************************************************/
+     *******************************************************************/
+    
+    
     $scope.initBoard = function() {
-        $scope.getBoards(100, 0);
+        $scope.getBoards(10, 0, true);
         
     };
     $scope.loadBoard = function($done) {
         
         $timeout(function() {        
-            $scope.getBoards(100, 0, function(){
+            $scope.getBoards(100, 0, true, function(){
                 // コールバックしてDONE
                 $done();
             });
@@ -1037,7 +1057,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         if (!angular.isUndefined(item)) {
             $scope.boardMsg.peopleIDTo = item.peopleID;
             $scope.boardMsg.boardIDTo  = item.boardID;
-            $scope.boardMsg.inline     = item.desc;
+            $scope.boardMsg.desc       = '>' + item.desc.replace(/\n|\r/g, '\n>');
             $scope.boardMsg.nicnameTo  = item.people.nicname;
         }
         
@@ -1046,7 +1066,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.boardCount = 100;
     $scope.boardItemHeight = 150;
     $scope.boards = [];
-    $scope.getBoards = function (limit, offset, callback){
+    $scope.getBoards = function (limit, offset, refresh, callback){
                
         $http({
             method: 'GET',
@@ -1054,9 +1074,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             headers: { 'Content-Type': 'application/json' },
             data: null,
         }).success(function(data, status, headers, config) {
-             console.log(data);
+            
+            if(refresh) {
+                $scope.boards = data.data;
+            } else {
+                // 配列の入れ替え作業保存
+                angular.forEach(data.data, function (board, key) {
+                    $scope.boards.push(board);
+                });
+            }
             // データをセット
-            $scope.boards = data.data;
+            
+            $scope.isLoading = false;
             
         }).error(function(data, status, headers, config) {
             // 登録済みのエラー
@@ -1069,16 +1098,100 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         });
 
     };
-    $scope.profilePeople = {};
+    
+    /******************************************************************
+     *  気になる[pick.html] pick　
+     *******************************************************************/
+    $scope.initPick = function() {
+        $scope.getPicks(10, 0, true);
+        
+    };
+    $scope.pickquery = "";
+    $scope.picks = [];
+    $scope.getPicks = function (limit, offset, refresh, callback){
+               
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.pick + $scope.webAPI.list + "/?peopleID=" + $scope.people.peopleID,
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+            
+            $scope.picks = data.data;
+            
+        }).error(function(data, status, headers, config) {
+            // 登録済みのエラー
+            $scope.alert("気になる一覧取得エラー", true);
+        }).finally(function() {
+            // ボードの処理が終わったらコールバック
+            callback();
+        });
+
+    };
+    /******************************************************************
+     *  プロフィール表示[profile.html] 
+     *******************************************************************/
+    
+    $scope.profile = {
+        people   : null,
+        boards   : [],
+        pick     : 0,
+        picker   : 0
+    };
     $scope.pushProfile = function(people) {
-        $scope.profilePeople = people;
+        $scope.profile.people = people;
+        
+        // プロフィールのボード情報を取得
+        $scope.getProfileBoards(people, "", function(){
+
+            // プロフィールへ遷移
+            $scope.movePage($scope.page.profile, $scope.options);
+
+        });
+        
         // プロフィールへ遷移
-        $scope.movePage($scope.page.profile, $scope.options);
+        //$scope.movePage($scope.page.profile, $scope.options);
         //$scope.$apply();
     };
-    /****************************************************************************************************
+    
+    $scope.getProfileBoards = function(people, boardID, callback) {
+        var bid = ""
+        if (!angular.isUndefined(boardID) && boardID != "") {
+            bid = "&boardID=" + boardID;
+        }
+        
+        //http://localhost:3000/spika/v1/board/list/?boardID=7&peopleID=1
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.list + "/?peopleID=" + people.peopleID + bid,
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+            
+            if (!angular.isUndefined(boardID) && boardID != "") {
+                $scope.profile.boards.push(data.data);
+            } else {
+                $scope.profile.boards = data.data;
+            }
+             
+            
+        }).error(function(data, status, headers, config) {
+            // 登録済みのエラー
+            $scope.alert("プロフィールボードの取得エラー", true);
+
+        }).finally(function() {
+            // ボードの処理が終わったらコールバック
+            callback();
+        });
+        
+        
+        
+    };
+    
+    
+    /******************************************************************
      *  設定[setting.html] ssetting
-     ****************************************************************************************************/
+     *******************************************************************/
     
     $scope.pushProfileEdit = function() {
         
@@ -1088,12 +1201,16 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         $scope.movePage($scope.page.profileEdit, $scope.options);
     };
     $scope.signout = function() {
-        
         // 生年月日の変換
         $scope.deletePeople();
-        // プロフィールへ遷移
+		
+		// 初期起動
+		$scope.initApp();
+		
+        // トップページへ遷移
         $scope.movePage($scope.page.top, $scope.options);
     };
+    
     /******************************************************************
      *  test
     *******************************************************************/
@@ -1458,6 +1575,8 @@ module.controller('boardCtrl', function($scope, $http, $q, $controller) {
         }
 
     };
+	
+	
 });
 
 // コントローラー
@@ -1789,6 +1908,14 @@ module.filter('nl2br', function($sce) {
             return $sce.trustAsHtml(replacedHtml.replace(/\n|\r/g, '<br>'));
     };
 });
+
+module.filter('inlinenl2br', function($sce) {
+    return function (input, exp) {
+            var replacedHtml = input.replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return $sce.trustAsHtml('＞' + replacedHtml.replace(/\n|\r/g, '<br>＞') + '<br>');
+    };
+});
+
 
 //http://localhost:3000
 //ws://spika.local-c.com:3000/spika

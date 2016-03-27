@@ -5,22 +5,20 @@
 </ons-toolbar>
 <ons-page class="timeline-page">
     <ons-list class="timeline-list" modifier="">
-        <ons-list-item class="timeline-li" modifier="" ng-repeat="talk in talkList" style="border-bottom: initial;">
+        <ons-list-item class="timeline-li" modifier="" ng-repeat="talk in tests">
             <!--ons-row ng-show="talk.peopleID != people.peopleID"-->
             <ons-row ng-class="talkRowClass(talk.peopleID)">
                 <ons-col width="50px" class="img-col">
                     <img ng-src="{{talk.people.imageURL}}" class="timeline-image">
-                    <div ng-class="talkDateClass(talk.peopleID)" >{{talk.created|customDate4|nl2br}}</div>
                 </ons-col>
                 <ons-col class="msgcol">
                     <div ng-class="talkFrameClass(talk.peopleID)">
                         <div class="msgdiv" style="" ng-bind-html="talk.msg|nl2br"></div>
                     </div>
-                    
                 </ons-col>
-                <!--ons-col class="datetime1">
+                <ons-col class="datetime1">
                     <div ng-class="talkDateClass(talk.peopleID)">{{talk.created|customDate4}}</div>
-                </ons-col-->
+                </ons-col>
             </ons-row>
             <!--ons-row ng-show="talk.peopleID == people.peopleID">
                 <ons-col class="datetime2">
@@ -53,10 +51,6 @@
     -webkit-flex-direction: row-reverse; /* Safari対応 */
 
 }
-.row-me {
-
-
-}
 .timeline-page {
 /*
     width: 100%;
@@ -82,7 +76,7 @@
 .msgcol {
     width: auto;
     display: inline-block;
-    max-width: 65%;
+    max-width: 50%;
 }
 .msgFrame1 {
     background-color: #fff;
@@ -114,7 +108,7 @@
     -webkit-user-select: auto;
     text-align:left;
     opacity:0.4; 
-    word-break: break-all; 
+    word-wrap: break-word;
     padding: 10px 5px 10px 5px;
     font-size: 14px;
 }
@@ -209,26 +203,26 @@
      border-bottom: none;
 }
 .img-col {
-    margin : 0 10px 0 10px;
+    margin : 0 0 0 10px;
 }
  
 .timeline-image {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 4px;
 }
 
 .timeline-date1 {
   float: left;
-  font-size: 10px;
+  font-size: 12px;
   opacity: 0.35;
-  //margin: 10px 10px 10px 10px;
+  margin: 10px 10px 10px 10px;
 }
 .timeline-date2 {
-  float: left;
-  font-size: 10px;
+  float: right;
+  font-size: 12px;
   opacity: 0.35;
-  //margin: 10px 10px 10px 10px;
+  margin: 10px 10px 10px 10px;
 }
 
 .timeline-from {

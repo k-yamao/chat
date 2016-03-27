@@ -14,8 +14,8 @@
 
     
     <div class="settings-header">プロフィール</div>
-    <ons-list modifier="inset" class="settings-list" ng-click="pushProfileEdit()">
-        <ons-list-item modifier="chevron">
+    <ons-list modifier="inset" class="settings-list">
+        <ons-list-item modifier="chevron" ng-click="pushProfileEdit()">
         プロフィール編集
         </ons-list-item>
         <ons-list-item modifier="chevron">
@@ -40,7 +40,7 @@
 
     <br>
     <ons-list modifier="inset" class="settings-list">
-        <ons-list-item modifier="tappable">
+        <ons-list-item modifier="tappable" ng-click="signout()">
             <ons-icon icon="ion-log-out" style="opacity: 0.8"></ons-icon>
             サインアウト
         </ons-list-item>
