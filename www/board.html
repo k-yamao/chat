@@ -1,13 +1,13 @@
 <ons-page id="list-page">
     <ons-toolbar>
         <div class="left">
-            <ons-toolbar-button>
-              <ons-icon icon="ion-compose" fixed-width="false" style="font-size: 26px; vertical-align: -4px" ng-click="newBoardMsg();"></ons-icon>
+            <ons-toolbar-button ng-click="newBoardMsg();">
+              <ons-icon icon="ion-compose" fixed-width="false" style="font-size: 26px; vertical-align: -4px"></ons-icon>
             </ons-toolbar-button>
         </div>
         <div class="center">タイムライン</div>
         <div class="right">
-            <ons-toolbar-button>
+            <ons-toolbar-button  ng-click="seachBoard();">
                 <ons-icon icon="ion-ios-search-strong" fixed-width="false" style="font-size: 26px; vertical-align: -4px;"></ons-icon>
             </ons-toolbar-button>
         </div>
@@ -50,8 +50,10 @@
                 <i class="fa fa-reply list-icon" ng-click="newBoardMsg(item);"></i>
                 <i class="fa fa-comment list-icon" ng-show="people.peopleID != item.peopleID" ng-click="signRoom(item);"></i>
                 <i class="list-icon" ng-show="people.peopleID == item.peopleID"></i>
-                <i class="fa fa-star list-icon"></i>
-                <i class="fa fa-flag list-icon"></i>
+                <i class="fa fa-star list-icon" ng-show="people.peopleID != item.peopleID" ng-click="addPick(item);"></i>
+                <i class="list-icon" ng-show="people.peopleID == item.peopleID"></i>
+                <i class="fa fa-flag list-icon" ng-show="people.peopleID != item.peopleID" ng-click="addReport(item);"></i>
+                <i class="list-icon" ng-show="people.peopleID == item.peopleID"></i>
             </ons-row>
         </ons-list-item>
         <ons-list-item ng-show="isLoading">

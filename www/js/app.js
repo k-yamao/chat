@@ -5,8 +5,6 @@ document.addEventListener ("deviceready", onDeviceReady, false);
 function onDeviceReady () {
 }
 
-
-
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
 var host = "spika.local-c.com:3000";
@@ -50,8 +48,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 // ボードリストを取得
                 $scope.initBoard();
                
-                // 部屋リストを取得
-                $scope.initRoom();
                 
                 // 気になるリストを取得
                 $scope.initPick();
@@ -61,19 +57,24 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 
                 // アクティブなタブが変わる前
                 tabbar.on('prechange', function(event) {
-                    console.log('tab prechange');
+                    
+                    // ルームリストへ変更したとき
+                    if (event.index == 1) {
+                        // 部屋リストを取得
+                        $scope.initRoom();
+                    }
+                    console.log('tab prechange:タブが変わった前');
                     
                 });
                 
                 // アクティブなタブが変わる前
-                tabbar.on('prechange', function(event) {
+                tabbar.on('postchange', function(event) {
                     // ボードリストを取得
                     //$scope.initBoard();
                
                     // 部屋リストを取得
                     //$scope.initRoom();
-                
-                    console.log('tab postchange');
+                    console.log('tab postchange:タブが変わった後');
                     
                 });
                 
@@ -91,6 +92,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         board   : "/board",
         pick    : "/pick",
         room    : "/room",
+        report  : "/report",
         msg     : "/msg",
         list    : "/list"
         
@@ -135,8 +137,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.page = {
         setting     : 'setting.html',       // 設定
         boardMsg    : 'boardMsg.html',		// メッセージ
+        boardSearch : 'boardSearch.html',  	// ボード検索条件
         profile     : 'profile.html',		// プロフィール
-		profileEdit : "profileEdit.html",
+		profileEdit : "profileEdit.html",   // プロフィール編集
         main        : 'main.html',			// メイン
         talkroom    : 'talkroom.html',		// 部屋一覧
         talk        : 'talk.html',		    // トーク
@@ -178,11 +181,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         city        : "",
         appeal      : "",
         phrase      : "",
-        auth        : 0,
+        auth        : "0",
         token       : "",
-        loging      : 0,
-        updated     : 0,
-        created     : 0
+        loging      : "0",
+        updated     : "0",
+        created     : "0"
     };
     $scope.birth = {
         year  : "",
@@ -219,7 +222,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         "database_size"         : 2000000    // サイズ
     };
     // プロフィールの入力フォームダイアログ
-    $scope.yearList  = ["1905","1906","1907","1908","1909","1910","1911","1912","1913","1914","1915","1916","1917","1918","1919","1920","1921","1922","1923","1924","1925","1926","1927","1928","1929","1930","1931","1932","1933","1934","1935","1936","1937","1938","1939","1940","1941","1942","1943","1944","1945","1946","1947","1948","1949","1950","1951","1952","1953","1954","1955","1956","1957","1958","1959","1960","1961","1962","1963","1964","1965","1966","1967","1968","1969","1970","1971","1972","1973","1974","1975","1976","1977","1978","1979","1980","1981","1982","1983","1984","1985","1986","1987","1988","1989","1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015"];
+    $scope.yearList  = ["2016","2015","2014","2013","2012","2011","2010","2009","2008","2007","2006","2005","2004","2003","2002","2001","2000","1999","1998","1997","1996","1995","1994","1993","1992","1991","1990","1989","1988","1987","1986","1985","1984","1983","1982","1981","1980","1979","1978","1977","1976","1975","1974","1973","1972","1971","1970","1969","1968","1967","1966","1965","1964","1963","1962","1961","1960","1959","1958","1957","1956","1955","1954","1953","1952","1951","1950","1949","1948","1947","1946","1945","1944","1943","1942","1941","1940","1939","1938","1937","1936","1935","1934","1933","1932","1931","1930","1929","1928","1927","1926","1925","1924","1923","1922","1921","1920"];
     $scope.monthList = ["01","02","03","04","05","06","07","08","09","10","11","12"];
     $scope.dayList   = ["01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"];
     $scope.prefList   = ["北海道","青森","岩手","宮城","秋田","山形","福島","茨城","栃木","群馬","埼玉","千葉","東京","神奈川","新潟","富山","石川","福井","山梨","長野","岐阜","静岡","愛知","三重","滋賀","京都","大阪","兵庫","奈良","和歌山","鳥取","島根","岡山","広島","山口","徳島","香川","愛媛","高知","福岡","佐賀","長崎","熊本","大分","宮崎","鹿児島","沖縄"];
@@ -244,19 +247,21 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
          * DBからメール、パスワード、ログイン期間を取得
          */         
         // データベースオブジェクト取得
-        $scope.db = $scope.getDB();
+        //$scope.db = $scope.getDB();
+        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
+        
         // テーブル存在チェック
-        $scope.db.transaction((function (tx) {
+        db.transaction((function (tx) {
             // テーブルチェック
             tx.executeSql($scope.query.checkPeopleTable, [], 
                 (function(tx, results) {
                     // Peopleテーブル存在して
                     if (results.rows.item(0).cnt > 0) {
                     //if (false) {
-                        modal.show();
+                        //modal.show();
                         // 認証処理
                         // ピープルデータ取得
-                        $scope.db.transaction(
+                        db.transaction(
                             (function (tx) {
                                 tx.executeSql(
                                     $scope.query.selectTabelPeople, 
@@ -264,7 +269,24 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                     // ピープルデータの取得に成功
                                     (function(tx, results) {
                                         var nU = Math.floor( new Date().getTime() / 1000 ) ;
-                                        $scope.people = results.rows.item(0);
+                                        var p = results.rows.item(0);
+                                        $scope.people._id        = p._id;
+                                        $scope.people.peopleID   = p.peopleID;
+                                        $scope.people.mail       = p.mail;
+                                        $scope.people.password   = p.password;
+                                        $scope.people.nicname    = p.nicname;
+                                        $scope.people.imageURL   = p.imageURL;
+                                        $scope.people.sex        = p.sex;
+                                        $scope.people.birthDay   = p.birthDay;
+                                        $scope.people.pref       = p.pref;
+                                        $scope.people.city       = p.city;
+                                        $scope.people.appeal     = p.appeal;
+                                        $scope.people.phrase     = p.phrase;
+                                        $scope.people.auth       = p.auth;
+                                        $scope.people.token      = p.token;
+                                        $scope.people.loging     = p.loging;
+                                        $scope.people.updated    = p.updated;
+                                        $scope.people.created    = p.created;
                                         //console.log("mail:" + $scope.people.mail + " password:" + $scope.people.password + " auth:" + $scope.people.auth + " loging:" + $scope.people.loging + " UnixTimeStamp:" + $scope.autoLoginTime);
                                         // メール、パスワードあり、認証あり、最終ログインが２ヶ月以内
                                         //if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth > 0 && $scope.people.loging > $scope.autoLoginTime) {
@@ -279,11 +301,13 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                             // ログインページへ
                                             //$scope.movePage($scope.page.login);
                                             //★テスト
-                                            $scope.movePage($scope.page.signup);
+                                            //$scope.movePage($scope.page.signup);
                                         } else {
+                                            //console.log(results.rows.item(0));
+                                            console.log($scope.people);
                                             // その他はトップページなので何もしない
                                         }
-                                        modal.hide();
+                                        //modal.hide();
                                         
                                     }), $scope.errorDB);
                             }), 
@@ -296,7 +320,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     // Peopleテーブルなし
                     } else {
                         // データベース・テーブル作成処理
-                        $scope.db.transaction((function (tx) { // テーブル作成
+                            db.transaction((function (tx) { // テーブル作成
                                 tx.executeSql($scope.query.dropTabelPeople);
                                 tx.executeSql($scope.query.createTabelPeople);
                                 tx.executeSql($scope.query.insertTabelPeople);
@@ -324,19 +348,16 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // ピープルテーブルの更新
     $scope.updatePeople = function(){
         // データベースオブジェクト取得
-        $scope.db = $scope.getDB();
+        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
         // スコアを更新
-        $scope.db.transaction($scope.exePeopleUpdate, $scope.errorDB);
+        db.transaction($scope.exePeopleUpdate, $scope.errorDB);
     };
     // ピープルテーブルの削除
     $scope.deletePeople = function(){
         // データベースオブジェクト取得
-        $scope.db = $scope.getDB();
-        
+        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
         // ピープルテーブルを削除
-        $scope.db.transaction($scope.exePeopleDelete, $scope.errorDB);    
-        
-        
+        db.transaction($scope.exePeopleDelete, $scope.errorDB);    
     };
     // ピープルテーブルの更新
     $scope.exePeopleUpdate = function (tx) {
@@ -405,9 +426,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // ピープルデータをDBから取得
     $scope.getPeople = function(){
         // データベースオブジェクト取得
-        $scope.db = $scope.getDB();
+        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
         // ピープルデータの取得に成功
-        $scope.db.transaction(
+        db.transaction(
             (function (tx) {
                 tx.executeSql(
                     $scope.query.selectTabelPeople, [], 
@@ -806,11 +827,16 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             headers: { 'Content-Type': 'application/json' },
             data: null,
         }).success(function(data, status, headers, config) {
-
             // DB登録
-            $scope.rooms = data.data;
-
+            $scope.rooms = [];
+            //console.log(data.data);
+            // すでにROOMがあるかチェック
+            angular.forEach(data.data, function(room, key) {
+              $scope.rooms.push(room);
+              console.log(room.roomID);
             
+            });
+        
         }).error(function(data, status, headers, config) {
             // 登録済みのエラー
             $scope.alert("トーク一覧取得エラー", true);
@@ -969,7 +995,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             //var sp = $(".list__item:last").position().top -	$(window).height() + 200;
             var sp = 100000;
             if (sp > 0) {
-                $(".timeline-list").animate({ scrollTop: sp });
+                //$(".timeline-list").animate({ scrollTop: sp });
                 
             }
             
@@ -1000,8 +1026,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     /******************************************************************
      *  ボード一覧[board.html] sboard
      *******************************************************************/
-    
-    
     $scope.initBoard = function() {
         $scope.getBoards(10, 0, true);
         
@@ -1013,8 +1037,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 // コールバックしてDONE
                 $done();
             });
-             
-            
         }, 1000);
     };
     $scope.boardMsg = {
@@ -1068,11 +1090,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.boards = [];
     $scope.getBoards = function (limit, offset, refresh, callback){
                
+               console.log($scope.seachParam);
         $http({
             method: 'GET',
             url : $scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.list + "/?limit=" + limit + "&offset=" + offset,
             headers: { 'Content-Type': 'application/json' },
-            data: null,
+            data: $scope.seachParam,
         }).success(function(data, status, headers, config) {
             
             if(refresh) {
@@ -1098,13 +1121,83 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         });
 
     };
+    $scope.seachParam = {
+        sex  : "",
+        pref : "",
+        age  : ""
+        
+    };
+    $scope.ageList = ["0歳 - 12歳", "13歳 - 15歳", "16歳 - 18歳","19歳 - 22歳","23歳 - 30歳","31歳 - 40歳","41歳 - 50歳","61歳 - 70歳","71歳 - 80歳","81歳 - 90歳"];
+    $scope.seachBoard = function (){
+        $scope.movePage($scope.page.boardSearch, $scope.options);
+    };
+    // 生年月日を設定
+    $scope.setAge = function(value){
+        // ダイアログ非表示
+        $scope.dialog.hide();
+        $scope.seachParam.age = value;
+    };
+     // 生年月日を設定
+    $scope.setSeachPref = function(value){
+        // ダイアログ非表示
+        $scope.dialog.hide();
+        $scope.seachParam.pref = value;
+    };
     
+    $scope.searchBoard = function(value){
+        
+        $scope.getBoards(10, 0, true, function(){});
+        
+        
+    };
+    // 通報、報告
+    $scope.addReport = function(item) {
+        //var mod = material ? 'material' : undefined;
+        var mod = {
+            
+        };
+    
+        ons.notification.confirm({
+          message: 'この投稿を通報しますか?',
+          modifier: mod,
+          callback: function(idx) {
+            switch (idx) {
+              case 0:
+                break;
+              case 1:
+                
+                var reportParam = {
+                    desc       : item.desc,
+                    boardIDTo  : item.boardID,
+                    peopleID   : $scope.people.peopleID,
+                    peopleIDTo : item.peopleID,
+                    inline     : "",
+                    nicnameTo  : item.nicnameTo
+
+                }
+               
+                $http({
+                    method: 'POST',
+                    url : $scope.webAPI.URL + $scope.webAPI.report,
+                    headers: { 'Content-Type': 'application/json' },
+                    data: reportParam,
+                }).success(function(data, status, headers, config) {
+                    $scope.alert("通報しました", true);
+                }).error(function(data, status, headers, config) {
+                    // 登録済みのエラー
+                    $scope.alert("通報に失敗しました。", true);
+                }).finally(function() {
+                });
+                break;
+            }
+          }
+        });
+    };    
     /******************************************************************
      *  気になる[pick.html] pick　
      *******************************************************************/
     $scope.initPick = function() {
         $scope.getPicks(10, 0, true);
-        
     };
     $scope.pickquery = "";
     $scope.picks = [];
@@ -1127,6 +1220,30 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             callback();
         });
 
+    };
+    // お気に入りに追加する
+    $scope.addPick = function (item){
+        
+        var pickdata = {
+            "peopleID"    : $scope.people.peopleID, 
+            "peoplePickID": item.peopleID,
+        };
+        
+        console.log($scope.webAPI.URL + $scope.webAPI.pick);
+        $http({
+            method: 'POST',
+            url : $scope.webAPI.URL + $scope.webAPI.pick,
+            headers: { 'Content-Type': 'application/json' },
+            data: pickdata,
+        }).success(function(data, status, headers, config) {
+            
+            
+        }).error(function(data, status, headers, config) {
+            // 登録済みのエラー
+            $scope.alert("気になる登録のエラー", true);
+        }).finally(function() {
+            
+        });
     };
     /******************************************************************
      *  プロフィール表示[profile.html] 
@@ -1210,7 +1327,14 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // トップページへ遷移
         $scope.movePage($scope.page.top, $scope.options);
     };
-    
+    // 利用規約
+    $scope.agreement = function() {
+       window.open('http://apache.org', '_blank', 'location=yes');
+    };
+    // プライバシーポリシー
+    $scope.privacy   = function() {
+       window.open('http://apache.org', '_blank', 'location=yes');
+    };    
     /******************************************************************
      *  test
     *******************************************************************/
