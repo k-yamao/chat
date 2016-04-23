@@ -5,6 +5,7 @@ document.addEventListener ("deviceready", onDeviceReady, false);
 function onDeviceReady () {
 }
 
+
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
 var host = "spika.local-c.com:3000";
@@ -872,7 +873,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             title    : ""
         };
         
-       console.log("roomID:" + roomID);
+       //console.log("roomID:" + roomID);
         
         if (roomID != "") {
 
@@ -919,7 +920,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         $scope.talkList = [];
         // ルームIDを保持
         $scope.talk.roomID = roomID;
-        console.log($scope.talk.roomID);
+        //console.log($scope.talk.roomID);
         $scope.getMsgList($scope.talk.roomID, 0);
     };
     $scope.getMsgList = function(roomID, lastMsgID){
@@ -950,6 +951,14 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             // トーク画面へ遷移
             $scope.movePage($scope.page.talk, $scope.options);
             
+            console.log('hohohohohoh');
+              var element = document.getElementsByClassName("timeline-li");
+            for (var i=0;i<element.length;i++) {
+                console.log(element[i].style.borderBottom);
+              element[i].style.borderBottom = "none"
+            }
+            
+            
 
         }).error(function(data, status, headers, config) {
 
@@ -979,11 +988,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     socket.on('newPeople',function(text){
         // ログインしたら部屋へ移動
         console.log("newPeople");
-        console.log(text);
+        //console.log(text);
     });
     socket.on('newMsg',function(data){
 
-        console.log(data);
+        //console.log(data);
         if (data.msg != "" && data.msg != "join") {
             $scope.talkList.push(data);    
         }
@@ -992,6 +1001,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // トークの最下部へスクロール
     $scope.scrollMsg = function () {
         setTimeout(function() {
+            
+          
             //var sp = $(".list__item:last").position().top -	$(window).height() + 200;
             var sp = 100000;
             if (sp > 0) {
