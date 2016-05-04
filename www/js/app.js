@@ -8,7 +8,7 @@ function onDeviceReady () {
 
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
-var host = "spika.local-c.com:3000";
+//var host = "spika.local-c.com:3000";
 
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, socket) {
@@ -95,7 +95,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         room    : "/room",
         report  : "/report",
         msg     : "/msg",
-        list    : "/list"
+        list    : "/list",
+        count   : "/count"
         
     };
     // オートログインの期間
@@ -923,6 +924,13 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         //console.log($scope.talk.roomID);
         $scope.getMsgList($scope.talk.roomID, 0);
     };
+    $scope.removeRoom = function(roomID){
+        
+        console.log(roomID);
+        
+        
+        
+    };
     $scope.getMsgList = function(roomID, lastMsgID){
         
         // APIから取得？
@@ -1261,10 +1269,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
      *******************************************************************/
     
     $scope.profile = {
-        people   : null,
-        boards   : [],
-        pick     : 0,
-        picker   : 0
+        people     : null,
+        boards     : [],
+        boardCount : 0,
+        pickCount  : 0,
+        pickerCount: 0
     };
     $scope.pushProfile = function(people) {
         $scope.profile.people = people;
@@ -1272,16 +1281,19 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // プロフィールのボード情報を取得
         $scope.getProfileBoards(people, "", function(){
 
-            // プロフィールへ遷移
-            $scope.movePage($scope.page.profile, $scope.options);
-
+            // ピープルのカウント情報取得
+            $scope.getProfileCount(people, function(){
+                
+                // プロフィールへ遷移
+                $scope.movePage($scope.page.profile, $scope.options);
+            });
         });
         
         // プロフィールへ遷移
         //$scope.movePage($scope.page.profile, $scope.options);
         //$scope.$apply();
     };
-    
+    // ピープルのボードを取得
     $scope.getProfileBoards = function(people, boardID, callback) {
         var bid = ""
         if (!angular.isUndefined(boardID) && boardID != "") {
@@ -1312,10 +1324,35 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             callback();
         });
         
+    };
+    // ピープルの各カウントを取得
+    $scope.getProfileCount = function(people, callback) {
+        
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.people + $scope.webAPI.count + "/" + people.peopleID,
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+            
+            
+            if (data.code == 200) {
+                $scope.profile.boardCount  = data.data.boardCount;
+                $scope.profile.pickCount   = data.data.pickCount;
+                $scope.profile.pickerCount = data.data.pickerCount;
+            }
+        }).error(function(data, status, headers, config) {
+            // 登録済みのエラー
+            $scope.alert("プロフィールのカウント取得エラー", true);
+
+        }).finally(function() {
+            // ボードの処理が終わったらコールバック
+            callback();
+        });
+        
         
         
     };
-    
     
     /******************************************************************
      *  設定[setting.html] ssetting
