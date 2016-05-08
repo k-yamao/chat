@@ -96,9 +96,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         report  : "/report",
         msg     : "/msg",
         list    : "/list",
-        count   : "/count"
+        count   : "/count",
+        delete  : "/delete"
         
     };
+    // ボードのデフォルト検索検索LIMIT
+    $scope.boardListLimit = 10;
     // オートログインの期間
     $scope.autoLoginTime = Math.floor( new Date().getTime() / 1000 ) - 5184000; // 2ヶ月前
     $scope.networkState = false;
@@ -1046,7 +1049,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
      *  ボード一覧[board.html] sboard
      *******************************************************************/
     $scope.initBoard = function() {
-        $scope.getBoards(10, 0, true);
+        $scope.getBoards($scope.boardListLimit, 0, true);
         
     };
     $scope.loadBoard = function($done) {
@@ -1109,12 +1112,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.boards = [];
     $scope.getBoards = function (limit, offset, refresh, callback){
                
-               console.log($scope.seachParam);
+        //console.log($scope.seachParam);
         $http({
             method: 'GET',
-            url : $scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.list + "/?limit=" + limit + "&offset=" + offset,
+            url : $scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.list + "/?limit=" + limit + "&offset=" + offset + $scope.getSearchParam(),
             headers: { 'Content-Type': 'application/json' },
-            data: $scope.seachParam,
         }).success(function(data, status, headers, config) {
             
             if(refresh) {
@@ -1140,13 +1142,29 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         });
 
     };
+    // 検索条件ようにパラメーター文字列を生成
+    $scope.getSearchParam = function() {
+        var param = "";
+        var amp   = "&";
+        if ($scope.seachParam.sex != "") {
+            param += amp + "sex=" + $scope.seachParam.sex;
+        }
+        if ($scope.seachParam.pref != "") {
+            param += amp + "pref=" + $scope.seachParam.pref;
+        }
+        if ($scope.seachParam.age != "") {
+            $scope.ageList
+            param += amp + "age=" + $scope.ageList.indexOf($scope.seachParam.age);
+        }
+        return param;
+    };
     $scope.seachParam = {
         sex  : "",
         pref : "",
         age  : ""
         
     };
-    $scope.ageList = ["0歳 - 12歳", "13歳 - 15歳", "16歳 - 18歳","19歳 - 22歳","23歳 - 30歳","31歳 - 40歳","41歳 - 50歳","61歳 - 70歳","71歳 - 80歳","81歳 - 90歳"];
+    $scope.ageList = ["0歳 - 12歳", "13歳 - 15歳", "16歳 - 18歳","19歳 - 22歳","23歳 - 30歳","31歳 - 40歳","41歳 - 50歳","51歳 - 60歳","61歳 - 70歳","71歳 - 80歳","81歳 - 90歳"];
     $scope.seachBoard = function (){
         $scope.movePage($scope.page.boardSearch, $scope.options);
     };
@@ -1162,10 +1180,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         $scope.dialog.hide();
         $scope.seachParam.pref = value;
     };
-    
+    // 検索条件を設定して検索をする
     $scope.searchBoard = function(value){
         
-        $scope.getBoards(10, 0, true, function(){});
+        $scope.getBoards($scope.boardListLimit, 0, true, function(){
+            $scope.movePopPage();
+        });
         
         
     };
@@ -1187,12 +1207,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 
                 var reportParam = {
                     desc       : item.desc,
-                    boardIDTo  : item.boardID,
+                    boardID    : item.boardID,
                     peopleID   : $scope.people.peopleID,
-                    peopleIDTo : item.peopleID,
-                    inline     : "",
-                    nicnameTo  : item.nicnameTo
-
+                    type       : "",
                 }
                
                 $http({
@@ -1212,6 +1229,50 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
           }
         });
     };    
+    // ボードを削除する
+    $scope.removeBoard = function(item) {
+        //var mod = material ? 'material' : undefined;
+        var mod = {
+            
+        };
+        ons.notification.confirm({
+          message: 'この投稿を削除しますか?',
+          modifier: mod,
+          callback: function(idx) {
+            switch (idx) {
+              case 0:
+                break;
+              case 1:
+
+                    
+                $http({
+                    method: 'GET',
+                    url : $scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.delete + "/" + item.boardID,
+                    headers: { 'Content-Type': 'application/json' }
+                }).success(function(data, status, headers, config) {
+                    
+                    angular.forEach($scope.boards, function(board, key) {
+                    
+                         if (item.boardID == board.boardID) {
+                             $scope.boards.splice(key,1);
+                            //$scope.$apply();         
+                         }
+                     
+                    });
+                    $scope.alert("投稿を削除しました", true);
+                    
+                }).error(function(data, status, headers, config) {
+                    // 登録済みのエラー
+                    $scope.alert("投稿の削除に失敗しました。", true);
+                }).finally(function() {
+                    
+                });
+                break;
+            }
+          }
+        });
+    }
+    
     /******************************************************************
      *  気になる[pick.html] pick　
      *******************************************************************/
