@@ -8,7 +8,7 @@ function onDeviceReady () {
 
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
-//var host = "spika.local-c.com:3000";
+var host = "spika.local-c.com:3000";
 
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, socket) {
