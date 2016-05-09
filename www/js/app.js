@@ -8,7 +8,7 @@ function onDeviceReady () {
 
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
-//var host = "spika.local-c.com:3000";
+var host = "spika.local-c.com:3000";
 
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, socket) {
@@ -933,6 +933,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         var mod = {
             
         };
+        
         ons.notification.confirm({
           message: 'チャットルームを削除しますか?',
           modifier: mod,
@@ -942,7 +943,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 break;
               case 1:
 
-                    
                 $http({
                     method: 'GET',
                     url : $scope.webAPI.URL + $scope.webAPI.room + $scope.webAPI.delete + "/" + roomID,
