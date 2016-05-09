@@ -8,7 +8,7 @@ function onDeviceReady () {
 
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
-var host = "spika.local-c.com:3000";
+//var host = "spika.local-c.com:3000";
 
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, socket) {
@@ -929,7 +929,46 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     $scope.removeRoom = function(roomID){
         
-        console.log(roomID);
+         //var mod = material ? 'material' : undefined;
+        var mod = {
+            
+        };
+        ons.notification.confirm({
+          message: 'チャットルームを削除しますか?',
+          modifier: mod,
+          callback: function(idx) {
+            switch (idx) {
+              case 0:
+                break;
+              case 1:
+
+                    
+                $http({
+                    method: 'GET',
+                    url : $scope.webAPI.URL + $scope.webAPI.room + $scope.webAPI.delete + "/" + roomID,
+                    headers: { 'Content-Type': 'application/json' }
+                }).success(function(data, status, headers, config) {
+                    
+                    angular.forEach($scope.rooms, function(room, key) {
+                    
+                         if (roomID == room.roomID) {
+                             $scope.rooms.splice(key,1);
+                            //$scope.$apply();         
+                         }
+                     
+                    });
+                    $scope.alert("チャットルームを削除しました", true);
+                    
+                }).error(function(data, status, headers, config) {
+                    // 登録済みのエラー
+                    $scope.alert("チャットルームの削除に失敗しました。", true);
+                }).finally(function() {
+                    
+                });
+                break;
+            }
+          }
+        });
         
         
         
