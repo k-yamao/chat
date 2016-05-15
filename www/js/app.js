@@ -8,7 +8,7 @@ function onDeviceReady () {
 
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
-//var host = "spika.local-c.com:3000";
+var host = "spika.local-c.com:3000";
 
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, socket) {
@@ -97,8 +97,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         msg     : "/msg",
         list    : "/list",
         count   : "/count",
-        delete  : "/delete"
-        
+        delete  : "/delete",
+        change  : "/change"
     };
     // ボードのデフォルト検索検索LIMIT
     $scope.boardListLimit = 10;
@@ -150,6 +150,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         talk        : 'talk.html',		    // トーク
         signup      : 'signup.html',		// 新規登録
         login       : 'login.html',			// ログイン
+        auth        : 'auth.html',			// 認証ページ
         top         : 'top.html',    		// トップページ
     };
     // 画面遷移イベント
@@ -294,22 +295,27 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.people.created    = p.created;
                                         //console.log("mail:" + $scope.people.mail + " password:" + $scope.people.password + " auth:" + $scope.people.auth + " loging:" + $scope.people.loging + " UnixTimeStamp:" + $scope.autoLoginTime);
                                         // メール、パスワードあり、認証あり、最終ログインが２ヶ月以内
-                                        //if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth > 0 && $scope.people.loging > $scope.autoLoginTime) {
-                                        if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.loging > $scope.autoLoginTime) {
+                                        if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth > 0 && $scope.people.loging > $scope.autoLoginTime) {
+                                        //if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.loging > $scope.autoLoginTime) {
                                             // メインへ遷移
                                             $scope.options.people = $scope.people;
                                             
                                             // ★★★★★メインページへ遷移★★★★★
-                                            $scope.movePage($scope.page.main, $scope.people);
+                                            if ($scope.people.sex == "")  {
+                                                $scope.movePage($scope.page.profileEdit, $scope.people);    
+                                            } else {
+                                                $scope.movePage($scope.page.main, $scope.people);
+                                            }
                                             //$scope.movePage('talk.html', $scope.people);
-                                        } else if ($scope.people.mail != "" && $scope.people.password != "") {
+                                        } else if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth == 0) {
                                             // ログインページへ
-                                            //$scope.movePage($scope.page.login);
+                                            console.log($scope.people);
+                                            $scope.movePage($scope.page.auth);
                                             //★テスト
                                             //$scope.movePage($scope.page.signup);
                                         } else {
                                             //console.log(results.rows.item(0));
-                                            console.log($scope.people);
+                                            //$scope.movePage($scope.page.top);
                                             // その他はトップページなので何もしない
                                         }
                                         //modal.hide();
@@ -518,24 +524,23 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.singup = function(){
         
         // debug
-        if ($scope.debug) {
-            $scope.people.mail = $scope.autoLoginTime + $scope.people.mail
-        }
-        
+//        if ($scope.debug) {
+//            $scope.people.mail = $scope.autoLoginTime + $scope.people.mail
+//        }
         // メールチェック
-        if (angular.isUndefined($scope.people.mail)){
+        if (angular.isUndefined($scope.people.mail) || $scope.people.mail == ""){
            $scope.alert("メールアドレスを確認しください", true);
            return false;
         }
 
         // パスワード
-        if (angular.isUndefined($scope.people.password)){
+        if (angular.isUndefined($scope.people.password) || $scope.people.password == ""){
             $scope.alert("パスワードを確認しください", true);
             return false;
         }
         
         // ニックネーム
-        if (angular.isUndefined($scope.people.nicname)){
+        if (angular.isUndefined($scope.people.nicname) || $scope.people.nicname == ""){
             $scope.alert("ニックネームを確認しください", true);
             return false;
         }
@@ -576,7 +581,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     // モーダル非表示
                     modal.hide();
 
-                    $scope.movePage($scope.page.profileEdit, $scope.options);
+                    $scope.movePage($scope.page.auth, $scope.options);
 
                 }
             }).error(function(data, status, headers, config) {
@@ -589,6 +594,63 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
        }, 3000);
         
     };
+    // 認証状態を確認
+    $scope.authConfirm = function() {
+        
+        // トークリストを取得 
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.people + "/" + $scope.people.peopleID,
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+
+            if (data.data.auth == 1) {
+                // 新規登録が完了
+                $scope.people.auth         = data.data.auth;
+                // ピープルテーブルへ保存
+                $scope.updatePeople();
+                ons.notification.alert({
+                    title: "本人確認",
+                    message: '完了しました。'
+                });
+                $scope.movePage($scope.page.profileEdit, $scope.people);
+            } else {
+                ons.notification.alert({
+                    title: "本人確認",
+                    messageHTML: "本人確認ができませんでした。<br>本人確認を完了させてください。"
+                });    
+            }
+            
+
+        }).error(function(data, status, headers, config) {
+            ons.notification.alert({
+                title: "本人確認",
+                messageHTML: "本人確認ができませんでした。<br>本人確認を完了させてください。"
+            });
+        });
+    };
+
+    // 認証メールの再送
+    $scope.authMailResend = function() {
+        // トークリストを取得 
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.change + '/?mail=' + $scope.people.mail + '&type=3',
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+
+            ons.notification.alert({
+                message: '認証メールを再送しました。'
+            });
+
+        }).error(function(data, status, headers, config) {
+            ons.notification.alert({
+                message: '認証メールを再送に失敗しました。'
+            });
+        });
+    };
     /******************************************************************
      *  プロフィール登録編集[profileEdit.html]
      *******************************************************************/
@@ -596,34 +658,49 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.saveProfile = function() {
 
         // 生年月日を年チェック
+        if ($scope.people.sex == ""){
+            ons.notification.alert({
+                title: "",
+                messageHTML: "性別を選択してください。"
+            });
+           return false;
+        }
+        
+        // 生年月日を年チェック
         if ($scope.birth.year == ""){
-           $scope.alert("生年月日の年を確認してください", true);
+            ons.notification.alert({
+                title: "",
+                messageHTML: "生年月日の年を入力してください"
+            });
            return false;
         }
         // 生年月日を月チェック
         if ($scope.birth.month == ""){
-           $scope.alert("生年月日の月を確認してください", true);
-           return false;
+            ons.notification.alert({
+                title: "",
+                messageHTML: "生年月日の月を入力してください"
+            });
+            return false;
         }
         // 生年月日を日チェック
         if ($scope.birth.day == ""){
-           $scope.alert("生年月日の日を確認してください", true);
+           ons.notification.alert({
+                title: "",
+                messageHTML: "生年月日の日を入力してください"
+            });
            return false;
         }
         // 都道府県チェック
         if ($scope.people.pref  == ""){
-           $scope.alert("都道府県を確認してください", true);
+            ons.notification.alert({
+                title: "",
+                messageHTML: "都道府県を入力してください"
+            });
            return false;
         }
         // 生年月日を年月日に設定
         $scope.people.birthDay = $scope.birth.year + $scope.birth.month + $scope.birth.day;
         
-        if ($scope.people.pref  == ""){
-           $scope.alert("都道府県を確認してください", true);
-           return false;
-        }
-     
-       
         // キュー配列        
         var promise_arr = [];
         // プロミス
@@ -636,7 +713,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 var deferred = $q.defer();
                 setTimeout(function() {
                     var resolveObj;
-                    console.log("hogehoge");
                     deferred.resolve(resolveObj);
                 }, 1000);
                 return deferred.promise;
@@ -658,7 +734,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
     };
     $scope.finallyProfile = function() {
-        console.log("ファイナリー");
+        //console.log("ファイナリー");
     };    
     $scope.setProfile = function() {
         $http({
@@ -1136,12 +1212,19 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // 新規投稿画面へ遷移
     $scope.newBoardMsg = function(item) {
 
-        $scope.boardMsg.peopleID = $scope.people.peopleID
+        $scope.boardMsg.peopleID = $scope.people.peopleID;
+        
+        //console.log(item);
         if (!angular.isUndefined(item)) {
             $scope.boardMsg.peopleIDTo = item.peopleID;
             $scope.boardMsg.boardIDTo  = item.boardID;
             $scope.boardMsg.desc       = '>' + item.desc.replace(/\n|\r/g, '\n>');
             $scope.boardMsg.nicnameTo  = item.people.nicname;
+        } else {
+            $scope.boardMsg.peopleIDTo = "";
+            $scope.boardMsg.boardIDTo  = "";
+            $scope.boardMsg.desc = "";
+            $scope.boardMsg.nicnameTo  = "";
         }
         
         $scope.movePage($scope.page.boardMsg, $scope.options);
@@ -1466,7 +1549,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         $scope.movePage($scope.page.profileEdit, $scope.options);
     };
     $scope.signout = function() {
-        // 生年月日の変換
+        // ピープル情報を削除
         $scope.deletePeople();
 		
 		// 初期起動
