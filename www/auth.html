@@ -1,0 +1,64 @@
+<ons-toolbar>
+    <div class="left"><!--ons-back-button>back</ons-back-button--></div>
+    <div class="center">認証</div>
+    <!--div class="right"><ons-toolbar-button>Close</ons-toolbar-button></div-->
+</ons-toolbar>
+<div class="formarea">
+        
+        <p class="desc">登録して頂いたメールアドレス宛へメールを送信しています。メール本文にあるURLにアクセスし、登録を完了させてください。</p>
+        <br><br>
+        <ons-button modifier="large" class="login-button" ng-click="authConfirm();">登録完了の確認</ons-button>
+        <br><br>
+        <ons-button modifier="large--cta" class="login-button" ng-click="authMailResend();">認証メールを再送する</ons-button>
+        <br><br>
+        <ons-button modifier="large--cta" class="login-button" ng-click="signout();">もう一度新規登録する</ons-button>
+</div>
+<ons-modal var="modal">
+  <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+  <br>
+  <br> Please wait.
+</ons-modal>
+
+
+<style>
+.desc {
+    color: grey;
+}
+.form-row {
+  margin: 4px;
+}
+
+.width-full {
+  width: 100%;
+}
+
+.width-half {
+  width: 48%;
+}
+
+.lucent {
+  opacity: 0.4;
+}
+
+.note {
+  margin: 12px 8px;
+  font-size: 13px;
+}
+
+.vspc {
+  margin-top: 20px;
+}
+
+.formarea {
+  width: 90%;
+  margin: 50px auto 0px auto;
+  
+}
+
+input[type=text],
+input[type=password] {
+  height: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+</style>
