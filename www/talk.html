@@ -23,47 +23,55 @@
         </ons-list>
     </div>
     <div class="msgbox">
-        <button class="button img-btn" ng-click="sendImg();">画像</button>
+        <button class="button img-btn" ng-click="sendImg();"><i class="fa fa-file-image-o" aria-hidden="true"></i></button>
         <textarea class="textarea textarea--transparent msg" autocomplete="off"  placeholder="Message" ng-model="talk.msg"></textarea>
         <button class="button send-btn" ng-click="sendMsg();">送信</button>
     </div>
 </ons-page>
 <style> 
     .img-btn {
-        width:10%;
+        width:30px;
         margin: 0; 
         height:100%;
         float: left;
+        text-align: center;
+        padding: 0px;
         border-radius: initial;
     }
     .msg {
-        width:71%;
-        height:100%;
+        width:100%;
+        height:60px;
         margin: 0; 
-        padding: 5px;
         float: left;
-        font-size: 15pt;
+        position: absolute;
+        bottom: 0px;
+        left: 30px;
+        right: 50px; 
         
     }
     .send-btn {
-        width:15%;
+        width:50px;
         margin: 0; 
         height:100%;
         float: right;
+        font-size: 15px;
         border-radius: initial;
     }
     .msgbox{
         position: absolute;
         bottom: 0px;  
         width: 100%;
-        height: 5%;
+        height:60px;
         border-top: 1px solid #ddd;
         
     }
     .timeline{
-      margin: 0 auto;
-      width: 100%;
-      height: 95%; 
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+      z-index: 0;
       overflow: auto;
     }
     .list-item-container {
