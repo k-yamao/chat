@@ -11,8 +11,23 @@ var host = "localhost:3000";
 var host = "spika.local-c.com:3000";
 
 // コントローラー
-module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, socket) {
+module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, $element, socket) {
 
+	$scope.sendImg =  function(){
+		
+		var scrollWrapper = $element.find('.page__content');
+		$scope.scrollTop = scrollWrapper.scrollTop();
+
+//		$scope.goToTop = function(){
+//			scrollWrapper.animate({'scrollTop': 0}, 'slow');
+//		};
+		scrollWrapper.on('scroll', function(e){
+			$scope.$apply(function(){
+			  $scope.scrollTop = e.target.scrollTop;
+			});
+		});
+	};
+  	
     angular.element(document).ready(function () {
         console.log("document ready");
         
@@ -1138,7 +1153,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             
         }, 200);
     };
-     $scope.isPeople = function(peopleID){
+    $scope.isPeople = function(peopleID){
         return peopleID == $scope.people.peopleID;
     };
     $scope.talkRowClass = function(peopleID){
@@ -1302,14 +1317,35 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         $scope.dialog.hide();
         $scope.seachParam.pref = value;
     };
+    
+    $scope.isBoardSearch = function(){
+        if($scope.seachParam.sex == "" && $scope.seachParam.pref == "" && $scope.seachParam.age == "") {
+            return false;
+        } else {
+            return true;
+        }
+    };
+    $scope.boardSearchClass = function(){
+        return {
+            'search-active'  :$scope.isBoardSearch(),
+            'search-none'    :!$scope.isBoardSearch()
+        }
+    };
     // 検索条件を設定して検索をする
-    $scope.searchBoard = function(value){
+    $scope.searchBoard = function(){
         
         $scope.getBoards($scope.boardListLimit, 0, true, function(){
             $scope.movePopPage();
         });
         
         
+    };
+    // 検索条件をクリアする
+    $scope.searchClear = function(){
+        
+        $scope.seachParam.sex = "";
+        $scope.seachParam.pref = "";
+        $scope.seachParam.age = "";
     };
     // 通報、報告
     $scope.addReport = function(item) {

@@ -4,7 +4,7 @@
     <div class="right"></div>
 </ons-toolbar>
 <ons-page class="timeline-page">
-    <div class="timeline">
+    <div class="timeline">{{scrollTop}}
         <ons-list>
             <ons-list-item modifier="inset" class="list-item-container" ng-class="talkRowClass(talk.peopleID)" ng-repeat="talk in talkList">
               <div class="list-item-left">
@@ -112,10 +112,13 @@
     }
 
     .desc {
+      -webkit-user-select: auto;
       line-height: 16px;
+
     }
 
     .lucent {
       opacity: 0.4;
+      font-size: 9pt;
     }
 </style>
