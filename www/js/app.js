@@ -13,20 +13,7 @@ var host = "spika.local-c.com:3000";
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, $element, socket) {
 
-	$scope.sendImg =  function(){
-		
-		var scrollWrapper = $element.find('.page__content');
-		$scope.scrollTop = scrollWrapper.scrollTop();
-
-//		$scope.goToTop = function(){
-//			scrollWrapper.animate({'scrollTop': 0}, 'slow');
-//		};
-		scrollWrapper.on('scroll', function(e){
-			$scope.$apply(function(){
-			  $scope.scrollTop = e.target.scrollTop;
-			});
-		});
-	};
+	
   	
     angular.element(document).ready(function () {
         console.log("document ready");
@@ -1123,7 +1110,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
       
         $scope.talk.msg = "";
         
-        $scope.scrollMsg();
+       
     };
     //               
     socket.on('newPeople',function(text){
@@ -1136,22 +1123,21 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         //console.log(data);
         if (data.msg != "" && data.msg != "join") {
             $scope.talkList.push(data);    
+            
+            
+            $scope.scrollMsg();
         }
         
+         
     });
     // トークの最下部へスクロール
     $scope.scrollMsg = function () {
         setTimeout(function() {
-            
-          
-            //var sp = $(".list__item:last").position().top -	$(window).height() + 200;
-            var sp = 100000;
-            if (sp > 0) {
-                //$(".timeline-list").animate({ scrollTop: sp });
-                
-            }
-            
-        }, 200);
+            var timelineElement = document.getElementsByClassName('timeline')[0];
+            timelineHight = timelineElement.scrollHeight;
+
+            timelineElement.scrollTop = timelineHight;
+        }, 100);
     };
     $scope.isPeople = function(peopleID){
         return peopleID == $scope.people.peopleID;
