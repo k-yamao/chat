@@ -43,6 +43,7 @@
             </ons-row>
             <ons-row class="desc-row">
                 <p class="item-desc" ng-bind-html="item.desc | customReadMore:0:200:'...'| nl2br"></p>
+                
             </ons-row>
             <ons-row>
                 <i class="fa fa-reply list-icon" ng-click="newBoardMsg(item);"></i>
@@ -54,9 +55,9 @@
                 <i class="fa fa-trash list-icon" ng-show="people.peopleID == item.peopleID"  ng-click="removeBoard(item);"></i>
             </ons-row>
         </ons-list-item>
-        <ons-list-item ng-show="isLoading">
+        <ons-list-item>
             <div class="loader-container">
-              <ons-icon icon="spinner" size="40px" spin="true"></ons-icon>
+				<ons-button modifier="button--outline" ng-click="nextBoard();">さらに読み込む</ons-button>
             </div>
         </ons-list-item>
     </ons-scroller>
@@ -64,6 +65,7 @@
   
   
 <style>
+  
     .search-active {
         font-size: 26px; 
         vertical-align: -4px;
