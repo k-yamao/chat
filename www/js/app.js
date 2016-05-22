@@ -412,6 +412,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
           $scope.dialogs[dlg].show();
         }
     };
+    
     // プロフィール写真を設定するとき処理
     $scope.snapPicture = function(type) {
         // カメラ撮影 or ライブラリ選択
@@ -421,14 +422,87 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     destinationType: Camera.DestinationType.FILE_URI,
                     sourceType: type,
                     allowEdit: true,
-                    targetWidth: 100,
-                    targetHeight: 100
+                    targetWidth: 500,
+                    targetHeight: 500,
+                    correctOrientation: true, // 撮影時と同じ向きに写真を回転
+                    saveToPhotoAlbum: false, // 撮影後、端末のアルバムに画像を保存
                 }
             );
         // 画像取得に成功してモデルにセットし、HTMLにも設定
         function onSuccess (imageURI) {
             $scope.people.imageFile = imageURI;
             document.getElementById('picture').src = imageURI;
+        }
+        // 画像取得に失敗
+        function onFail (message) {
+            $scope.alert("画像が選択されませんでした。", true);
+        }
+    };
+    // チャット用の写真を設定するとき処理
+    $scope.snapChatPicture = function(type) {
+        // カメラ撮影 or ライブラリ選択
+        navigator.camera.getPicture (onSuccess, onFail, 
+                { 
+                    quality: 100, 
+                    destinationType: Camera.DestinationType.FILE_URI,
+                    sourceType: type,
+                    allowEdit: true,
+                    targetWidth: 500,
+                    targetHeight: 500,
+                    correctOrientation: true, // 撮影時と同じ向きに写真を回転
+                    saveToPhotoAlbum: false, // 撮影後、端末のアルバムに画像を保存
+                }
+            );
+        // 画像取得に成功してモデルにセットし、HTMLにも設定
+        function onSuccess (imageURI) {
+            
+            //ファイルをアップロード
+            console.log(imageURI);
+            var ft       = new FileTransfer();
+            var options  = new FileUploadOptions();
+            var params = {};
+            options.fileKey = "file";
+            options.fileName = mediaFile.substr(mediaFile.lastIndexOf('/') + 1);
+            console.log(options.fileName);
+//            params.type = type;
+//            params.filename = device_id;
+//            params.ex = ex;
+//            params.dir = 'lcchat';
+//            options.params = params;
+
+            //deferred.notify({});// 処理の通知を示す 
+            var upSuccess = function(result) {
+                var data = JSON.parse(result.response);
+                console.log(result.response);
+                console.log(data.code);
+                console.log(JSON.stringify(data));
+                if (data.code == 200) {
+                    if (data.type == 2) {
+                        // 音声ファイル
+                    } else {
+                        // 画像ファイル
+                        $scope.people.imageURL = data.fileurl;
+                    }
+                }
+                // 処理の成功を示す
+                deferred.resolve(data);
+            };
+            var upError = function(error) {
+                var data = error.body;
+                $scope.alert("画像登録エラー", true);
+                // 処理の失敗を示す
+                deferred.reject(data);
+            };
+
+            // ファイルアップロード
+            ft.upload(path,
+                encodeURI("http://spika.local-c.com:3000/spika/v1/file/upload"),
+                upSuccess,
+                upError,
+                options);
+
+            
+            
         }
         // 画像取得に失敗
         function onFail (message) {
@@ -786,7 +860,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             modal.hide();
         });
     };
-     // type : 1:画像ファイル、2:音声ファイル
+    // type : 1:画像ファイル、2:音声ファイル
     $scope.uploadFile = function(mediaFile, type, device_id, ex) {
         console.log(mediaFile);
         var deferred = $q.defer();
@@ -885,6 +959,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // ダイアログ非表示
         $scope.dialog.hide();
         $scope.snapPicture(type)
+    };
+    $scope.openChatPicture = function(type){
+        // ダイアログ非表示
+        $scope.dialog.hide();
+        $scope.snapChatPicture(type)
     };
     // ダイアログを閉じる
     $scope.closeDialog = function(){
@@ -1074,7 +1153,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 
             
             // 最下部へスクロール
-            $scope.scrollMsg();
+            $scope.scrollMsg(100);
             
             // トーク画面へ遷移
             $scope.movePage($scope.page.talk, $scope.options);
@@ -1125,19 +1204,19 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             $scope.talkList.push(data);    
             
             
-            $scope.scrollMsg();
+            $scope.scrollMsg(300);
         }
         
          
     });
     // トークの最下部へスクロール
-    $scope.scrollMsg = function () {
+    $scope.scrollMsg = function (sec) {
         setTimeout(function() {
             var timelineElement = document.getElementsByClassName('timeline')[0];
             timelineHight = timelineElement.scrollHeight;
 
             timelineElement.scrollTop = timelineHight;
-        }, 100);
+        }, sec);
     };
     $scope.isPeople = function(peopleID){
         return peopleID == $scope.people.peopleID;
