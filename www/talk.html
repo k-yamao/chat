@@ -23,12 +23,24 @@
         </ons-list>
     </div>
     <div class="msgbox">
-        <button class="button img-btn" ng-click="sendImg();"><i class="fa fa-file-image-o" aria-hidden="true"></i></button>
+        <button class="button img-btn" ng-click="show('image.html');"><i class="fa fa-file-image-o" aria-hidden="true"></i></button>
         <textarea class="textarea textarea--transparent msg" autocomplete="off"  placeholder="Message" ng-model="talk.msg"></textarea>
         <button class="button send-btn" ng-click="sendMsg();">送信</button>
     </div>
 </ons-page>
+<ons-template id="image.html">
+    <ons-dialog var="dialog" class="onsdialog" cancelable>
+        <ons-list class="dialog-image">
+            <ons-list-item modifier="tappable" ng-click="openChatPicture(1);">カメラ</ons-list-item>
+            <ons-list-item modifier="tappable" ng-click="openChatPicture(0);">アルバム</ons-list-item>
+            <ons-list-item modifier="tappable" ng-click="closeDialog();">キャンセル</ons-list-item>
+        </ons-list>
+    </ons-dialog>
+</ons-template>
 <style> 
+    .dialog-image {
+     text-align: center;
+    }
     .img-btn {
         width:30px;
         margin: 0; 
@@ -39,7 +51,7 @@
         border-radius: initial;
     }
     .msg {
-        width:100%;
+        width:auto;
         height:60px;
         margin: 0; 
         float: left;
