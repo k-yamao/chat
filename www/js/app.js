@@ -457,12 +457,14 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         function onSuccess (imageURI) {
             
             //ファイルをアップロード
-            console.log(imageURI);
+            
             var ft       = new FileTransfer();
             var options  = new FileUploadOptions();
             var params = {};
             options.fileKey = "file";
-            options.fileName = mediaFile.substr(mediaFile.lastIndexOf('/') + 1);
+            options.fileName = imageURI;
+            console.log('tes');
+
             console.log(options.fileName);
 //            params.type = type;
 //            params.filename = device_id;
@@ -495,7 +497,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             };
 
             // ファイルアップロード
-            ft.upload(path,
+            ft.upload(imageURI,
                 encodeURI("http://spika.local-c.com:3000/spika/v1/file/upload"),
                 upSuccess,
                 upError,
