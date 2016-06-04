@@ -17,6 +17,7 @@
                   </div>
 
                   <span class="desc" ng-bind-html="talk.msg|nl2br"></span>
+                  <img  class="img-thumb" ng-show="talk.file.thumb.id != ''" ng-src="{{imgBaseURL}}{{talk.file.thumb.id}}">
                 </div>
               </div>
             </ons-list-item>
@@ -38,6 +39,9 @@
     </ons-dialog>
 </ons-template>
 <style> 
+    .img-thumb{
+        width:100%;
+    }
     .dialog-image {
      text-align: center;
     }

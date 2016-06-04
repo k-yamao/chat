@@ -18,6 +18,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     angular.element(document).ready(function () {
         console.log("document ready");
         
+        
+        
+        
         // オンラインになったとき、このイベントが発火
         document.addEventListener("online", function(){console.log('オンライン');}, false);
         //アプリがオフラインになったときに、このイベントが発火
@@ -102,6 +105,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         delete  : "/delete",
         change  : "/change"
     };
+    $scope.imgBaseURL = "http://spika.local-c.com:3000/spika/v1/file/download/";
     // ボードのデフォルト検索検索LIMIT
     $scope.boardListLimit = 10;
     // オートログインの期間
@@ -446,7 +450,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     quality: 100, 
                     destinationType: Camera.DestinationType.FILE_URI,
                     sourceType: type,
-                    allowEdit: true,
+                    allowEdit: false,
                     targetWidth: 500,
                     targetHeight: 500,
                     correctOrientation: true, // 撮影時と同じ向きに写真を回転
@@ -455,45 +459,35 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             );
         // 画像取得に成功してモデルにセットし、HTMLにも設定
         function onSuccess (imageURI) {
-            
             //ファイルをアップロード
-            
             var ft       = new FileTransfer();
             var options  = new FileUploadOptions();
             var params = {};
-            options.fileKey = "file";
-            options.fileName = imageURI;
-            console.log('tes');
+            // console.log(imageURI);
+            options.fileKey  = "file";
+            options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+            options.mimeType ="image/jpeg";
+            options.params = params;
 
-            console.log(options.fileName);
-//            params.type = type;
-//            params.filename = device_id;
-//            params.ex = ex;
-//            params.dir = 'lcchat';
-//            options.params = params;
-
-            //deferred.notify({});// 処理の通知を示す 
             var upSuccess = function(result) {
-                var data = JSON.parse(result.response);
-                console.log(result.response);
-                console.log(data.code);
-                console.log(JSON.stringify(data));
-                if (data.code == 200) {
-                    if (data.type == 2) {
-                        // 音声ファイル
-                    } else {
-                        // 画像ファイル
-                        $scope.people.imageURL = data.fileurl;
-                    }
+                // メッセージを送信
+                var res = JSON.parse(result.response);
+                if (res.code == 1) {
+
+                    $scope.talk.file  = res.data.file;
+                    $scope.talk.thumb = res.data.thumb;
+                    $scope.sendImgMsg();
+                } else {
+                    console.log(2222222222);
                 }
-                // 処理の成功を示す
-                deferred.resolve(data);
+                
             };
             var upError = function(error) {
-                var data = error.body;
-                $scope.alert("画像登録エラー", true);
-                // 処理の失敗を示す
-                deferred.reject(data);
+                
+                ons.notification.alert({
+                    title: "",
+                    message: '画像アップロードに失敗しました。'
+                });
             };
 
             // ファイルアップロード
@@ -978,7 +972,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.rooms  = [];
     $scope.talk   = {
         roomID : "",
-        msg : "",
+        msg  : "",
+        file : null,
+        thumb: null
     }
     $scope.roomID = "";
     $scope.status = {
@@ -1147,8 +1143,13 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             
             // 配列の入れ替え作業保存
             angular.forEach(data.data, function (msg, key) {
-                if (msg.msg != "" && msg.msg != "join") {
+                
+                
+                //if (msg.msg != "" && msg.msg != "join") {
+                if (msg.msg != "join") {
+
                     $scope.talkList.unshift(msg);    
+                    
                 }
                 
             });
@@ -1160,7 +1161,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             // トーク画面へ遷移
             $scope.movePage($scope.page.talk, $scope.options);
             
-            console.log('hohohohohoh');
+            //console.log('hohohohohoh');
               var element = document.getElementsByClassName("timeline-li");
             for (var i=0;i<element.length;i++) {
                 console.log(element[i].style.borderBottom);
@@ -1193,6 +1194,23 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
        
     };
+    // メッセージ送信
+    $scope.sendImgMsg = function () {
+        
+        socket.emit('sendMsg',{
+            msg      : "",
+            roomID   : $scope.talk.roomID,
+            peopleID : $scope.people.peopleID,
+            file     : {
+                file     : $scope.talk.file,
+                thumb    : $scope.talk.thumb
+            },            
+            type     : 2,
+            localID  : ""
+        });
+      
+       
+    };
     //               
     socket.on('newPeople',function(text){
         // ログインしたら部屋へ移動
@@ -1201,10 +1219,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     });
     socket.on('newMsg',function(data){
 
-        //console.log(data);
-        if (data.msg != "" && data.msg != "join") {
+        //if (data.msg != "" && data.msg != "join") {
+        if (data.msg != "join") {
             $scope.talkList.push(data);    
-            
             
             $scope.scrollMsg(300);
         }
@@ -1219,6 +1236,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 
             timelineElement.scrollTop = timelineHight;
         }, sec);
+        
     };
     $scope.isPeople = function(peopleID){
         return peopleID == $scope.people.peopleID;
