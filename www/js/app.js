@@ -2267,7 +2267,7 @@ module.filter('autoLink', function($sce) {
         var regexp_makeLink = function(all, url, h, href) {
             //return '<div ng-click="openWindow(\'h' + href + '\');">' + url + '</div>';
             //return '<div ng-click="agreement()">' + url + '</div>';
-            return '<a href="h' + href + '">' + url + '</a>';
+            return '<a href="h' + href + '" target="_blank">' + url + '</a>';
         }
         return $sce.trustAsHtml(input.replace(regexp_url, regexp_makeLink));
     }
