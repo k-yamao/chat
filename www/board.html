@@ -42,7 +42,7 @@
                 </ons-col>
             </ons-row>
             <ons-row class="desc-row">
-                <p class="item-desc" ng-bind-html="item.desc | autoLink"></p>
+                <p class="item-desc" ng-bind-html="item.desc | nl2br"></p>
             </ons-row>
             <ons-row>
                 <i class="fa fa-reply list-icon" ng-click="newBoardMsg(item);"></i>
@@ -54,11 +54,11 @@
                 <i class="fa fa-trash list-icon" ng-show="people.peopleID == item.peopleID"  ng-click="removeBoard(item);"></i>
             </ons-row>
         </ons-list-item>
-        <ons-list-item>
+        <!--ons-list-item>
             <div class="loader-container">
 				<ons-button modifier="button--outline" ng-click="nextBoard();">さらに読み込む</ons-button>
             </div>
-        </ons-list-item>
+        </ons-list-item-->
     </ons-scroller>
 </ons-page>
   

@@ -4,7 +4,7 @@
     <div class="right"></div>
 </ons-toolbar>
 <ons-page class="timeline-page">
-    <div class="timeline">{{scrollTop}}
+    <div class="timeline">
         <ons-list>
             <ons-list-item modifier="inset" class="list-item-container" ng-class="talkRowClass(talk.peopleID)" ng-repeat="talk in talkList">
               <div class="list-item-left">
@@ -39,6 +39,13 @@
     </ons-dialog>
 </ons-template>
 <style> 
+    .row-me {
+        background-color: rgba(24,103,194,0.2);
+        
+    }
+    .row-etc {
+        background-color: white;
+    }
     .img-thumb{
         width:100%;
     }

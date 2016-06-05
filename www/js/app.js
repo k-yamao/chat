@@ -13,7 +13,7 @@ var host = "spika.local-c.com:3000";
 // コントローラー
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, $element, socket) {
 
-    
+	
   	
     angular.element(document).ready(function () {
         console.log("document ready");
