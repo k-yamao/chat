@@ -169,6 +169,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             indexNavigator.pushPage(page, options);
         }
     };
+    // 内部ブラウザを起動
+    $scope.openWindow = function(url) {
+        console.log(url);
+       window.open(url, '_blank', 'location=yes');
+    };
+    // 画面遷移
     $scope.movePopPage = function(options) {
         
         // オプションの指定がなければ、デフォルトオプション
@@ -2242,15 +2248,28 @@ module.filter('customReadMore', function() {
        
         var readmoreText = '';
         
-       
-        
-        
         var inputtext = String(input);
         if (inputtext.length > to && !angular.isUndefined(text)) {
             readmoreText = text;
         }        
         return inputtext.substring(from, to) + readmoreText;
         
+    }
+});
+
+
+module.filter('autoLink', function($sce) {
+    return function(input) {
+        input.replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        input = input.replace(/\n|\r/g, '<br>')
+        var regexp_url = /((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))/g; // ']))/;
+        var regexp_makeLink = function(all, url, h, href) {
+            //return '<div ng-click="openWindow(\'h' + href + '\');">' + url + '</div>';
+            //return '<div ng-click="agreement()">' + url + '</div>';
+            return '<a href="h' + href + '">' + url + '</a>';
+        }
+        return $sce.trustAsHtml(input.replace(regexp_url, regexp_makeLink));
     }
 });
 

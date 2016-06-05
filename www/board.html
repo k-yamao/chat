@@ -42,8 +42,7 @@
                 </ons-col>
             </ons-row>
             <ons-row class="desc-row">
-                <p class="item-desc" ng-bind-html="item.desc | customReadMore:0:200:'...'| nl2br"></p>
-                
+                <p class="item-desc" ng-bind-html="item.desc | autoLink"></p>
             </ons-row>
             <ons-row>
                 <i class="fa fa-reply list-icon" ng-click="newBoardMsg(item);"></i>
