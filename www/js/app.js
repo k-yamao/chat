@@ -107,7 +107,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     $scope.imgBaseURL = "http://spika.local-c.com:3000/spika/v1/file/download/";
     // ボードのデフォルト検索検索LIMIT
-    $scope.boardListLimit = 10;
+    $scope.boardListLimit = 200;
     // オートログインの期間
     $scope.autoLoginTime = Math.floor( new Date().getTime() / 1000 ) - 5184000; // 2ヶ月前
     $scope.networkState = false;
@@ -226,6 +226,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // アラートダイアログ
     $scope.alert = function(msg, material) {
         ons.notification.alert({
+          title  : '',
           message: msg,
           modifier: material ? 'material' : undefined
         });
@@ -1136,6 +1137,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     $scope.getMsgList = function(roomID, lastMsgID){
         
+        //console.log($scope.webAPI.URL + $scope.webAPI.msg + $scope.webAPI.list + '/' + roomID + '/' + lastMsgID)
         // APIから取得？
         // トークリストを取得 
         $http({
@@ -1225,6 +1227,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     });
     socket.on('newMsg',function(data){
 
+        data.msg = $scope.convertLink(data.msg);
         //if (data.msg != "" && data.msg != "join") {
         if (data.msg != "join") {
             $scope.talkList.push(data);    
@@ -1234,6 +1237,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
          
     });
+    $scope.convertLink  = function (input) {
+        input.replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        //input = input.replace(/\n|\r/g, '<br>')
+        var regexp_url = /((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))/g; // ']))/;
+        var regexp_makeLink = function(all, url, h, href) {
+            return '<div ng-click="openWindow(\'h' + href + '\');">' + url + '</div>';
+            //return '<a href="#" ng-click="alert(1)">' + url + '</a>';
+            //return '<a href="h' + href + '" target="_blank">' + url + '</a>';
+        }
+        return $sce.trustAsHtml(input.replace(regexp_url, regexp_makeLink));
+    }
     // トークの最下部へスクロール
     $scope.scrollMsg = function (sec) {
         setTimeout(function() {
@@ -1294,6 +1309,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };    
     $scope.saveBoardMsg = function() {
        
+        console.log($scope.boardMsg.desc);
+        if ($scope.boardMsg.desc == "") {
+            $scope.alert('メッセージが入力されていません。');
+        }
+        
+        return;
         $http({
             method: 'POST',
             url : $scope.webAPI.URL + $scope.webAPI.board,
@@ -2266,11 +2287,25 @@ module.filter('autoLink', function($sce) {
         var regexp_url = /((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))/g; // ']))/;
         var regexp_makeLink = function(all, url, h, href) {
             //return '<div ng-click="openWindow(\'h' + href + '\');">' + url + '</div>';
-            //return '<div ng-click="agreement()">' + url + '</div>';
-            return '<a href="h' + href + '" target="_blank">' + url + '</a>';
+            return '<a href="#" ng-click="alert(1)">' + url + '</a>';
+            //return '<a href="h' + href + '" target="_blank">' + url + '</a>';
         }
         return $sce.trustAsHtml(input.replace(regexp_url, regexp_makeLink));
     }
+});
+
+module.directive('a', function() {
+  return {
+    restrict: 'E',
+    link: function(scope, elem, attrs) {
+        console.log(attrs);
+      if(attrs.ngClick || attrs.href === '' || attrs.href === '#'){
+        elem.on('click', function(e){
+          e.preventDefault();
+        });
+      }
+    }
+  };
 });
 
 /**
