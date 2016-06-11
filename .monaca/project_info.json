@@ -1,7 +1,8 @@
 {
     "plugins": [
         "mobi.monaca.plugins.Monaca",
-        "mobi.monaca.plugins.Share"
+        "mobi.monaca.plugins.Share",
+        "mobi.monaca.plugins.MonacaBackend"
     ],
     "framework_version": "3.5",
     "xcode_version": "6",

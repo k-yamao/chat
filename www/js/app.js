@@ -1312,9 +1312,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         console.log($scope.boardMsg.desc);
         if ($scope.boardMsg.desc == "") {
             $scope.alert('メッセージが入力されていません。');
+            return;
         }
         
-        return;
         $http({
             method: 'POST',
             url : $scope.webAPI.URL + $scope.webAPI.board,
@@ -2434,6 +2434,10 @@ module.filter('customDate4', function() {
  */
 module.filter('nl2br', function($sce) {
     return function (input, exp) {
+        // console.log(input);
+        // if (!angular.isUndefined(input)) {
+        //     console.log("sss");
+        // }
             var replacedHtml = input.replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             return $sce.trustAsHtml(replacedHtml.replace(/\n|\r/g, '<br>'));
     };
