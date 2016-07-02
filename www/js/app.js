@@ -14,18 +14,21 @@ var host = "spika.local-c.com:3000";
 module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $location, $timeout, $element, socket) {
 
 	
-  	
+  	// document ready
     angular.element(document).ready(function () {
-        console.log("document ready");
-        
-        
-        
         
         // オンラインになったとき、このイベントが発火
-        document.addEventListener("online", function(){console.log('オンライン');}, false);
+        document.addEventListener("online", function(){
+                console.log('オンライン');
+                
+                
+        }, false);
         //アプリがオフラインになったときに、このイベントが発火
-        document.addEventListener("offline", function(){console.log('オフライン');}, false);
-        
+        document.addEventListener("offline", function(){
+                console.log('オフライン');
+                
+                
+        }, false);
         
         // デバイスIDを取得し、ものまねリストを取得する
         monaca.getDeviceId(function(id){
@@ -158,6 +161,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         login       : 'login.html',			// ログイン
         auth        : 'auth.html',			// 認証ページ
         top         : 'top.html',    		// トップページ
+        password    : 'password.html'    	// パスワード初期化
     };
     // 画面遷移イベント
     $scope.movePage = function(page, options) {
@@ -258,11 +262,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
     };
     
-    /****************************************************************************************************
+    /*******************************************************************
      * アプリ起動時、トップ画面 [top.html]
      *******************************************************************/
-    $scope.initApp = function() {
-        /**
+    $scope.signinStatus = false;
+    $scope.initApp = function() {        /**
          * DBからメール、パスワード、ログイン期間を取得
          */         
         // データベースオブジェクト取得
@@ -294,7 +298,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.people.mail       = p.mail;
                                         $scope.people.password   = p.password;
                                         $scope.people.nicname    = p.nicname;
-                                        $scope.people.imageURL   = p.imageURL;
+                                        $scope.people.imageURL   = p.imageURL == "" ? "http://file.local-c.com/uploads/mimicry/noimage.png" : p.imageURL;
                                         $scope.people.sex        = p.sex;
                                         $scope.people.birthDay   = p.birthDay;
                                         $scope.people.pref       = p.pref;
@@ -306,13 +310,27 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.people.loging     = p.loging;
                                         $scope.people.updated    = p.updated;
                                         $scope.people.created    = p.created;
+                                        
+                                        if ($scope.people.peopleID != "") {
+                                            /**
+                                             * サインイン
+                                             */
+                                            $scope.signin();
+                                        } else {
+
+                                            // トップページでボタンを表示
+                                            $scope.signinStatus = true;
+                                            $scope.$apply();   
+
+                                        }
+                                        
                                         //console.log("mail:" + $scope.people.mail + " password:" + $scope.people.password + " auth:" + $scope.people.auth + " loging:" + $scope.people.loging + " UnixTimeStamp:" + $scope.autoLoginTime);
                                         // メール、パスワードあり、認証あり、最終ログインが２ヶ月以内
+                                        /*
                                         if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth > 0 && $scope.people.loging > $scope.autoLoginTime) {
                                         //if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.loging > $scope.autoLoginTime) {
                                             // メインへ遷移
                                             $scope.options.people = $scope.people;
-                                            
                                             // ★★★★★メインページへ遷移★★★★★
                                             if ($scope.people.sex == "")  {
                                                 $scope.movePage($scope.page.profileEdit, $scope.people);    
@@ -322,17 +340,17 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                             //$scope.movePage('talk.html', $scope.people);
                                         } else if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth == 0) {
                                             // ログインページへ
-                                            console.log($scope.people);
                                             $scope.movePage($scope.page.auth);
                                             //★テスト
                                             //$scope.movePage($scope.page.signup);
                                         } else {
-                                            //console.log(results.rows.item(0));
+                                            $scope.signinStatus = true;
+                                            $scope.$apply();   
                                             //$scope.movePage($scope.page.top);
                                             // その他はトップページなので何もしない
                                         }
                                         //modal.hide();
-                                        
+                                        */
                                     }), $scope.errorDB);
                             }), 
                             $scope.errorDB
@@ -567,7 +585,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     $scope.people.nicname      = data.data.nicname;
                     $scope.people.imageURL     = angular.isUndefined(data.data.imageURL) ? 'http://file.local-c.com/uploads/mimicry/noimage.png' : data.data.imageURL;
                     $scope.people.nicname      = data.data.nicname;
-                    $scope.people.sex          = angular.isUndefined(data.data.sex) ? '女性' : data.data.sex;
+                    $scope.people.sex          = data.data.sex;
                     $scope.people.birthDay     = angular.isUndefined(data.data.birthDay) ? '' : data.data.birthDay;
                     $scope.people.pref         = angular.isUndefined(data.data.pref) ? '' : data.data.pref;
                     $scope.people.appeal       = angular.isUndefined(data.data.appeal) ? '' : data.data.appeal;
@@ -585,18 +603,74 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     modal.hide();
                     
                     // メインページへ遷移
-                    $scope.movePage($scope.page.main);
+                    //$scope.movePage($scope.page.main);
+                    
+                    
+                    // メール、パスワードあり、認証あり、最終ログインが２ヶ月以内
+                    if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth > 0) {
+                        // メインへ遷移
+                        $scope.options.people = $scope.people;
+                        // ★★★★★メインページへ遷移★★★★★
+                        if ($scope.people.sex == "" || angular.isUndefined($scope.people.sex))  {
+                        $scope.movePage($scope.page.profileEdit, $scope.people);    
+                        } else {
+                            $scope.movePage($scope.page.main, $scope.people);
+                        }
+                    } else if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth == 0) {
+                        // 認証確認
+                        $scope.movePage($scope.page.auth);
+                    } else {
+                        // トップページでボタンを表示
+                        $scope.signinStatus = true;
+                        $scope.$apply();   
+                    }
 
             }).error(function(data, status, headers, config) {
                 
                 // モーダル非表示
                 modal.hide();
+                
+                
+                if (!$scope.signoutFlag) {
+                    $scope.alert('サインインに失敗しました。',true);
+                } 
                 //     
-                $scope.alert('サインインに失敗しました。',true);
+                
+                // トップページでボタンを表示
+                $scope.signinStatus = true;
+                //$scope.$apply();
             });
        }, 3000);
         
     };
+    /******************************************************************    
+     *  パスワード初期化[password.html]
+     *******************************************************************/
+     $scope.initPassword = function(){
+         
+         // トークリストを取得 
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.change + '/?mail=' + $scope.people.mail + '&type=1',
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+
+            ons.notification.alert({
+                title: '',
+                message: 'パスワードを初期化しました。メールを確認してください。'
+            });
+
+        }).error(function(data, status, headers, config) {
+            ons.notification.alert({
+                title: '',
+                message: 'パスワードの初期化に失敗しました。'
+            });
+        });
+         
+         
+     };
+     
     /******************************************************************    
      *  新規登録[signup.html]
      *******************************************************************/
@@ -664,7 +738,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 
                 }
             }).error(function(data, status, headers, config) {
-                
+                console.log(data);
                 // モーダル非表示
                 modal.hide();
                 //     
@@ -721,15 +795,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         }).success(function(data, status, headers, config) {
 
             ons.notification.alert({
+                title: '',
                 message: '認証メールを再送しました。'
             });
 
         }).error(function(data, status, headers, config) {
             ons.notification.alert({
+                title: '',
                 message: '認証メールを再送に失敗しました。'
             });
         });
     };
+    
     /******************************************************************
      *  プロフィール登録編集[profileEdit.html]
      *******************************************************************/
@@ -996,14 +1073,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         }).success(function(data, status, headers, config) {
             // DB登録
             $scope.rooms = [];
-            //console.log(data.data);
             // すでにROOMがあるかチェック
             angular.forEach(data.data, function(room, key) {
               $scope.rooms.push(room);
-              console.log(room.roomID);
-            
             });
-        
         }).error(function(data, status, headers, config) {
             // 登録済みのエラー
             $scope.alert("トーク一覧取得エラー", true);
@@ -1147,24 +1220,15 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             data: null,
         }).success(function(data, status, headers, config) {
 
-            //$scope.talkList = data.data;
-            
             // 配列の入れ替え作業保存
             angular.forEach(data.data, function (msg, key) {
-                
-                
-                //if (msg.msg != "" && msg.msg != "join") {
                 if (msg.msg != "join") {
-
                     $scope.talkList.unshift(msg);    
-                    
                 }
-                
             });
-
             
             // 最下部へスクロール
-            $scope.scrollMsg(100);
+            $scope.scrollMsg(400);
             
             // トーク画面へ遷移
             $scope.movePage($scope.page.talk, $scope.options);
@@ -1227,11 +1291,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     });
     socket.on('newMsg',function(data){
 
-        data.msg = $scope.convertLink(data.msg);
-        //if (data.msg != "" && data.msg != "join") {
-        if (data.msg != "join") {
+        if ((data.msg != "" || data.file.thumb.id != '') && data.msg != "join") {
             $scope.talkList.push(data);    
-            
             $scope.scrollMsg(300);
         }
         
@@ -1254,7 +1315,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         setTimeout(function() {
             var timelineElement = document.getElementsByClassName('timeline')[0];
             timelineHight = timelineElement.scrollHeight;
-
+            console.log(timelineHight);
             timelineElement.scrollTop = timelineHight;
         }, sec);
         
@@ -1696,10 +1757,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // プロフィールへ遷移
         $scope.movePage($scope.page.profileEdit, $scope.options);
     };
+    $scope.signoutFlag = false;
     $scope.signout = function() {
         // ピープル情報を削除
         $scope.deletePeople();
-		
+		$scope.signoutFlag = true;
 		// 初期起動
 		$scope.initApp();
 		
@@ -1714,102 +1776,33 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.privacy   = function() {
        window.open('http://apache.org', '_blank', 'location=yes');
     };    
-    /******************************************************************
-     *  test
-    *******************************************************************/
-    $scope.tests = [
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげほげほげほげほげほげほげほげほげほげほげ",
-            created  : 1457015600236
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbb",
-            created  : 1457015600236
-        },
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "ほげほげ",
-            created  : 1457015600236
-        }
-    ];
+    
+    // 退会 People削除
+    $scope.removePeople = function() {
+        
+        console.log($scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.delete + '/' + $scope.people.peopleID);
+        // トークリストを取得 
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.delete + '/' + $scope.people.peopleID,
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+            // サインアウト
+            $scope.signout();
+            ons.notification.alert({
+                title: '',
+                message: '退会しました。'
+            });
+
+        }).error(function(data, status, headers, config) {
+            ons.notification.alert({
+                title: '',
+                message: '退会処理に失敗しました。'
+            });
+        });
+    };
+    
                         
 });  
 
@@ -2373,7 +2366,7 @@ module.filter('customDate2', function() {
 module.filter('customDate3', function() {
     return function(input) {
         if (angular.isUndefined(input)) {
-            return "未設定";
+            return "";
         }
         var age     = 0;
         var nowDate = new Date();

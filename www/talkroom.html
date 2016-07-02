@@ -16,10 +16,18 @@
                     <div class="list-item-right">
                         <div class="list-item-content">
                             <div class="name">{{r.nicname}}
+                                
                                 <span class="lucent"></span>
                             </div>
                             <span class="desc">{{r.appeal}}</span>
                         </div>
+                    </div>
+                </div>
+                <div ng-show="room.peoples.length < 2">
+                    <div class="list-item-left">
+                    </div>
+                    <div class="list-item-right">
+                    退会されました
                     </div>
                 </div>
             </ons-carousel-item>

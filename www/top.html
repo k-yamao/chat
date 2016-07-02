@@ -1,11 +1,14 @@
 <ons-page>
 <div class="login-form">
     <div class="logo"></div>
-    <ons-button modifier="large" class="login-button" ng-click="movePage('menu.html');">menu</ons-button>
     <br>
-    <ons-button modifier="large" class="login-button" ng-click="movePage('signup.html');">新規登録</ons-button>
     <br>
-    <ons-button modifier="large" class="login-button" ng-click="movePage('signin.html');">サインイン</ons-button>
+    <br>
+    <br>
+    
+    <ons-button ng-show="signinStatus" modifier="large" class="login-button" ng-click="movePage('signup.html');">新規登録</ons-button>
+    <br>
+    <ons-button ng-show="signinStatus" modifier="large" class="login-button" ng-click="movePage('signin.html');">サインイン</ons-button>
 </ons-button>
 <br>
     <br>
@@ -25,8 +28,11 @@
 }
 
 .logo {
-    width: 100%;
+    width: 200px;
     height: 200px;
+    background-image: url("img/carp.png");
+    margin-left: auto;
+    margin-right: auto;
 }
 
 input[type=email], input[type=password] {
@@ -50,13 +56,11 @@ input[type=email], input[type=password] {
   margin: 8px auto 0 auto;
   font-size: 14px;
 }
-</style>
 
-<style>
 .login-form {
   text-align: center;
   width: 80%;
-  margin: 60px auto 0;
+  margin: 60px auto 0 auto;
 }
 
 input[type=email], input[type=password] {
