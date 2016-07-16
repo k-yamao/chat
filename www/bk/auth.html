@@ -1,0 +1,98 @@
+print<<<EOF
+<!DOCTYPE HTML>
+<html lang="ja" ng-app="chat-app">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <style>
+    
+        /* html,bodyタグの設定 */
+html, body{
+    margin: 0;         /* 余白の削除 */
+    padding: 0;        /* 余白の削除 */
+    width:100%;
+    height:100%;
+    font-family : Arial,'ＭＳ Ｐゴシック',sans-serif ;
+}
+        
+        /* ヘッダーの固定 */
+div#header-fixed
+{
+    position: fixed;            /* ヘッダーの固定 */
+    top: 0px;                   /* 位置(上0px) */
+    left: 0px;                  /* 位置(右0px) */
+    width: 100%;                /* 横幅100%　*/
+    height: 140px;              /* 縦幅140px */
+}
+ 
+ 
+div#header-bk { 
+	background-color: rgba(24,103,194,0.81);
+	padding:10px 0 20px;       /* 上10px、下20pxをあける */
+	height:110px;              /* 縦の高さ110px */
+	width:100%;                /* 横の幅を100% */
+}
+ 
+ 
+div#header { 
+	height: 100%;              /* 縦の表示領域はheader-bkと同じ */
+	width: 960px;              /* 横の幅970px */
+	margin: auto;              /* 中央揃え */
+    font-size: 24pt;
+    color: white;
+}
+        /* フッターの固定 */
+div#footer-fixed
+{
+    position: fixed;            /* フッターの固定 */
+    bottom: 0px;                /* 位置(下0px) */
+    left: 0px;                  /* 位置(左0px) */
+    width: 100%;                /* 横幅100%　*/
+    height: 140px;              /* 縦幅140px */
+}
+ 
+div#footer-bk
+{
+	background-color: rgba(24,103,194,0.81);
+	padding:10px 0 20px;       /* 上10px、下20pxをあける */
+	height:110px;              /* 縦の高さ140px */
+	width:100%;                /* 横の幅を100% */
+}
+ 
+div#footer { 
+	height: 100%;              /* 縦の表示領域はheader-bkと同じ */
+	width: 960px;              /* 横の幅970px */
+	margin: auto;              /* 中央揃え */
+    font-size: 15pt;
+    color: white;
+    text-align: right;
+}
+        /* ボディの定義 */
+div#body-bk{
+    padding:160px 0 160px 0;    /* 上下に160pxを余白を取る */
+}
+ 
+div#body{
+    width:960px;
+    margin:auto;
+}
+    </style>
+</head>
+<body>
+    <div id="header-fixed">
+         <div id="header-bk">
+                <div id="header">Street</div>
+         </div>
+  </div>
+  <div id="body-bk">
+         <div id="body">メール認証が完了しました。<br>アプリの「登録完了の確認」ボタンをタップしてください。</div>
+  </div>
+  <div id="footer-fixed">
+         <div id="footer-bk">
+                <div id="footer">Street by LOCAL COLOR</div>
+         </div>
+  </div>
+</body>
+</html>
+EOF;
