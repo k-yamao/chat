@@ -16,10 +16,17 @@
                     <div class="list-item-right">
                         <div class="list-item-content">
                             <div class="name">{{r.nicname}}
-                                <span class="lucent"></span>
+                                <span class="lucent status-msg" ng-show="room.status == 0 && people.peopleID != room.msgPeopleID">NEW</span>
                             </div>
-                            <span class="desc">{{r.appeal}}</span>
+                            <span class="desc">{{room.msg}}</span>
                         </div>
+                    </div>
+                </div>
+                <div ng-show="room.peoples.length < 2">
+                    <div class="list-item-left">
+                    </div>
+                    <div class="list-item-right">
+                    退会されました
                     </div>
                 </div>
             </ons-carousel-item>
@@ -46,6 +53,11 @@
   padding: 15px 0px 15px 15px;
 }
 
+.status-msg {
+    background-color: rgba(255,5,50,0.4);
+    font-size: 8pt;
+    padding: 2px 5px 2px 5px;
+}
 .list-item-left {
   width: 60px;
   margin-right: -60px;

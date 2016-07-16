@@ -1,5 +1,5 @@
 <ons-toolbar>
-    <div class="left"><ons-back-button>back</ons-back-button></div>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
     <div class="center">サインイン</div>
 </ons-toolbar>
 <ons-page>
@@ -22,10 +22,10 @@
     </div>
 
     <br><br>
-    <ons-button modifier="large" class="login-button" ng-click="signin()">サインイン</ons-button>
+    <ons-button modifier="large" class="login-button" ng-click="signin(true)">サインイン</ons-button>
 
     <br><br>
-    <ons-button modifier="quiet" class="forgot-password">パスワードを忘れた場合はこちら</ons-button>
+    <ons-button modifier="quiet" class="forgot-password" ng-click="movePage(page.password);">パスワードを忘れた場合はこちら</ons-button>
     <ons-button modifier="quiet" class="forgot-password" ng-click="movePage(page.signup);">新規登録</ons-button>
     
     </form>

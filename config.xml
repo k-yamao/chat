@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" id="com.local.c.chat" version="1.0.0">
-  <name>LC Chat</name>
+<widget xmlns="http://www.w3.org/ns/widgets" id="com.local.c.street" version="1.0.0">
+  <name>Street</name>
   <description/>
   <author/>
   <content src="index.html"/>
@@ -12,14 +12,10 @@
   <preference name="ErrorUrl" value=""/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="AllowInlineMediaPlayback" value="false"/>
-  <preference name="AutoHideSplashScreen" value="true"/>
   <preference name="BackupWebStorage" value="cloud"/>
-  <preference name="EnableViewportScale" value="false"/>
-  <preference name="FadeSplashScreen" value="true"/>
   <preference name="FadeSplashScreenDuration" value=".25"/>
   <preference name="KeyboardDisplayRequiresUserAction" value="true"/>
   <preference name="MediaPlaybackRequiresUserAction" value="false"/>
-  <preference name="ShowSplashScreenSpinner" value="false"/>
   <preference name="SuppressesIncrementalRendering" value="false"/>
   <preference name="TopActivityIndicator" value="gray"/>
   <preference name="GapBetweenPages" value="0"/>
@@ -30,13 +26,17 @@
     <param name="ios-package" value="CDVLocalStorage"/>
   </feature>
   <preference name="UIWebViewDecelerationSpeed" value="normal"/>
-  <preference name="monaca:targetFamilyiPhone" value="1"/>
-  <preference name="monaca:targetFamilyiPad" value="1"/>
-  <access origin="*"/>
   <preference name="KeepRunning" value="true"/>
   <preference name="monaca:AndroidIsPackageNameSeparate" value="false"/>
-  <preference name="DisallowOverscroll" value="true"/>
   <preference name="Orientation" value="default"/>
-  <preference name="SplashScreenDelay" value="1000"/>
+  <preference name="SplashScreenDelay" value="99999999999999"/>
   <preference name="Fullscreen" value="false"/>
+  <preference name="monaca:targetFamilyiPhone" value="1"/>
+  <preference name="monaca:targetFamilyiPad" value="1"/>
+  <preference name="AutoHideSplashScreen" value="true"/>
+  <preference name="FadeSplashScreen" value="true"/>
+  <preference name="ShowSplashScreenSpinner" value="false"/>
+  <access origin="*"/>
+  <preference name="DisallowOverscroll" value="true"/>
+  <preference name="EnableViewportScale" value="false"/>
 </widget>
