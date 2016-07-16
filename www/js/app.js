@@ -2,9 +2,11 @@
 var module = angular.module('chat-app', ['onsen']);
 //var module = ons.bootstrap('chat-app', ['onsen']);
 document.addEventListener ("deviceready", onDeviceReady, false);
-function onDeviceReady () {
-}
 
+
+function onDeviceReady () {
+    navigator.splashscreen.hide();
+}
 
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
 var host = "localhost:3000";
@@ -16,7 +18,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 	
   	// document ready
     angular.element(document).ready(function () {
-        
+        navigator.splashscreen.hide();
         // オンラインになったとき、このイベントが発火
         document.addEventListener("online", function(){
                 console.log('オンライン');
@@ -41,29 +43,31 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // アプリ起動時の処理
         $scope.initApp();
 
-        // pageがpushされる直前に発火されます。
-        indexNavigator.on('prepush', function(event) {
-            var page = event.currentPage; // 現在のページオブジェクトを取得する
-
-            
+        // pageがpushされてアニメーションが終了してから発火
+        indexNavigator.on('postpop', function(event) {
+            // メインページへ遷移したあとの処理
+            if (event.enterPage.name == $scope.page.main) {
+                $scope.newMsgAlert = true;
+            }
+        
         });
-
         // pageがpushされてアニメーションが終了してから発火
         indexNavigator.on('postpush', function(event) {
+
+            // トークページへ遷移したらアラートを表示しない
+            if (event.enterPage.name == $scope.page.talk) {
+                $scope.newMsgAlert = false;
+            }
             
             // メインページへ遷移したあとの処理
             if (event.enterPage.name == $scope.page.main) {
 
                 // ボードリストを取得
                 $scope.initBoard();
-               
                 
-                // 気になるリストを取得
-                $scope.initPick();
                 /**
                  * タブのイベントを設定
-                 */
-                
+                 */                
                 // アクティブなタブが変わる前
                 tabbar.on('prechange', function(event) {
                     
@@ -71,21 +75,30 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     if (event.index == 1) {
                         // 部屋リストを取得
                         $scope.initRoom();
+                    } else if (event.index == 2) {
+                        // 気になるリストを取得
+                        $scope.initPick();
                     }
                     console.log('tab prechange:タブが変わった前');
                     
                 });
                 
-                // アクティブなタブが変わる前
-                tabbar.on('postchange', function(event) {
-                    // ボードリストを取得
-                    //$scope.initBoard();
-               
-                    // 部屋リストを取得
-                    //$scope.initRoom();
-                    console.log('tab postchange:タブが変わった後');
-                    
-                });
+                
+                // pageがpushされる直前に発火されます。
+                // indexNavigator.on('prepush', function(event) {
+                //     var page = event.currentPage; // 現在のページオブジェクトを取得する
+                //     console.log(page.name);
+                // });
+                
+                // アクティブなタブが変わった後
+                // tabbar.on('postchange', function(event) {
+                //     // ボードリストを取得
+                //     //$scope.initBoard();
+                //     // 部屋リストを取得
+                //     //$scope.initRoom();
+                //     console.log('tab postchange:タブが変わった後');
+                //     
+                // });
                 
                 
             }
@@ -108,6 +121,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         delete  : "/delete",
         change  : "/change"
     };
+    $scope.newMsgAlert = true;
     $scope.imgBaseURL = "http://spika.local-c.com:3000/spika/v1/file/download/";
     // ボードのデフォルト検索検索LIMIT
     $scope.boardListLimit = 200;
@@ -315,7 +329,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                             /**
                                              * サインイン
                                              */
-                                            $scope.signin();
+                                            $scope.signin(false);
                                         } else {
 
                                             // トップページでボタンを表示
@@ -552,7 +566,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     /******************************************************************    
      *  サインイン[signin.html]
      *******************************************************************/
-    $scope.signin = function(){
+    $scope.signin = function(modalFlag){
 
         // メールチェック
         if (angular.isUndefined($scope.people.mail)){
@@ -566,8 +580,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             return false;
         }
         
-        // モーダル表示
-        modal.show();
+        if (modalFlag) {
+            // モーダル表示
+            modal.show();
+        }
+        
         
         setTimeout(function() {
             $http({
@@ -599,13 +616,16 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     // ピープルテーブルへ保存
                     $scope.updatePeople();
                     
-                    // モーダル非表示
-                    modal.hide();
+                    
+                    if (modalFlag) {
+                        // モーダル非表示
+                        modal.hide();
+                    }
+
                     
                     // メインページへ遷移
                     //$scope.movePage($scope.page.main);
-                    
-                    
+                
                     // メール、パスワードあり、認証あり、最終ログインが２ヶ月以内
                     if ($scope.people.mail != "" && $scope.people.password != "" && $scope.people.auth > 0) {
                         // メインへ遷移
@@ -1056,15 +1076,16 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.rooms  = [];
     $scope.talk   = {
         roomID : "",
-        msg  : "",
-        file : null,
-        thumb: null
+        msg    : "",
+        file   : null,
+        thumb  : null
     }
     $scope.roomID = "";
     $scope.status = {
         signin : false
     };
     $scope.initRoom = function () {
+
         $http({
             method: 'GET',
             url : $scope.webAPI.URL + $scope.webAPI.room + $scope.webAPI.list + "/?peopleID=" + $scope.people.peopleID,
@@ -1075,7 +1096,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             $scope.rooms = [];
             // すでにROOMがあるかチェック
             angular.forEach(data.data, function(room, key) {
-              $scope.rooms.push(room);
+                // 配列にルームを追加        
+                $scope.rooms.push(room);
+                // ルームにサインイン
+                $scope.roomSignIn(room.roomID)
+              
             });
         }).error(function(data, status, headers, config) {
             // 登録済みのエラー
@@ -1091,7 +1116,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         self     : 0    
     };
     $scope.talkList = [];
-    $scope.talk
     $scope.signRoom = function(item){
 
         var roomID = "";
@@ -1148,6 +1172,16 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 
         }
     };
+    /**
+     * 部屋サインインだけする全部に接続する
+     */
+    $scope.roomSignIn = function(roomID){
+        // Roomへサインイン
+        socket.emit('signin',{
+            roomID : roomID,
+            peopleID: $scope.people.peopleID 
+        });
+    }
     $scope.startTalk = function(roomID){
         // Roomへサインイン
         socket.emit('signin',{
@@ -1286,14 +1320,27 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     //               
     socket.on('newPeople',function(text){
         // ログインしたら部屋へ移動
-        console.log("newPeople");
+        //console.log("newPeople");
         //console.log(text);
     });
     socket.on('newMsg',function(data){
 
-        if ((data.msg != "" || data.file.thumb.id != '') && data.msg != "join") {
+        
+        //console.log(JSON.stringify(data));
+        console.log(data.msg);
+        console.log($scope.newMsgAlert);
+        if ($scope.talk.roomID == data.roomID && (data.msg != "" || data.file.thumb.id != '') && data.msg != "join") {
             $scope.talkList.push(data);    
             $scope.scrollMsg(300);
+       
+        } else if ($scope.newMsgAlert){
+
+            console.log("hoge" + data.msg);
+            
+            ons.notification.alert({
+              title: data.people.nicname + 'さんから新着メッセージ',
+              message: data.msg
+            });
         }
         
          
@@ -1315,7 +1362,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         setTimeout(function() {
             var timelineElement = document.getElementsByClassName('timeline')[0];
             timelineHight = timelineElement.scrollHeight;
-            console.log(timelineHight);
+            //console.log(timelineHight);
             timelineElement.scrollTop = timelineHight;
         }, sec);
         
@@ -1608,7 +1655,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
      *  気になる[pick.html] pick　
      *******************************************************************/
     $scope.initPick = function() {
-        $scope.getPicks(10, 0, true);
+        $scope.getPicks(100, 0, true);
     };
     $scope.pickquery = "";
     $scope.picks = [];
@@ -1648,10 +1695,17 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             data: pickdata,
         }).success(function(data, status, headers, config) {
             
+            ons.notification.alert({
+                title: '気になる',
+                message: '登録しました。'
+            });
             
         }).error(function(data, status, headers, config) {
             // 登録済みのエラー
-            $scope.alert("気になる登録のエラー", true);
+            ons.notification.alert({
+                title: '気になる',
+                message: '登録に失敗しました。'
+            });
         }).finally(function() {
             
         });
@@ -1780,7 +1834,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // 退会 People削除
     $scope.removePeople = function() {
         
-        console.log($scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.delete + '/' + $scope.people.peopleID);
+        //console.log($scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.delete + '/' + $scope.people.peopleID);
         // トークリストを取得 
         $http({
             method: 'GET',
@@ -1805,447 +1859,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     
                         
 });  
-
-// プロフィールコントローラー
-module.controller('profileCtrl', function($scope, $http, $q, $controller) {
-    // 基本コントローラーを継承
-    $controller('baseCtrl', {$scope: $scope});
-     // document.readyの実装
-    angular.element(document).ready(function () {
-        var options = $scope.indexNavigator.getCurrentPage().options;    
-        // オプションでプロフィールが渡ってきたら
-        if (!angular.isUndefined(options.people)) {
-            $scope.people.peopleID     = options.people.peopleID;
-            $scope.people._id          = options.people._id;
-            $scope.people.mail         = options.people.mail;
-            $scope.people.password     = options.people.password;
-            $scope.people.nicname      = options.people.nicname;
-            $scope.people.auth         = options.people.auth;
-            $scope.people.token        = options.people.token;
-            $scope.people.loging       = options.people.loging;
-            $scope.people.updated      = options.people.updated;
-            $scope.people.created      = options.people.created;
-            $scope.people.boards       = options.people.boards;
-            $scope.$apply();
-        }   
-    });    
-    
-});
-// コントローラー
-module.controller('loginCtrl', function($scope,$http, $controller) {
-    
-});
-// コントローラー
-module.controller('signCtrl', function($scope,$http, $controller) {
-    
-    // 基本コントローラーを継承
-    $controller('baseCtrl', {$scope: $scope});
-    // document.readyの実装
-    angular.element(document).ready(function () {
-        
-    });
-    
-   
-
-});
-
-
-
-// コントローラー
-module.controller('sss', function($scope, $http, $q, $controller, socket) {
-
-    
-    // document.readyの実装
-    angular.element(document).ready(function () {
-        // ピープル情報を取得
-        var options = $scope.indexNavigator.getCurrentPage().options;    
-        // オプションでプロフィールが渡ってきたら
-        if (!angular.isUndefined(options.people)) {
-            $scope.people.peopleID     = options.people.peopleID;
-            $scope.people._id          = options.people._id;
-            $scope.people.mail         = options.people.mail;
-            $scope.people.password     = options.people.password;
-            $scope.people.nicname      = options.people.nicname;
-            $scope.people.auth         = options.people.auth;
-            $scope.people.token        = options.people.token;
-            $scope.people.loging       = options.people.loging;
-            $scope.people.updated      = options.people.updated;
-            $scope.people.created      = options.people.created;
-            $scope.people.boards       = options.people.boards;
-            $scope.$apply();
-        }
-        
-   
-        $scope.initRoom();
-
-    });
-    $scope.rooms = [];
-    $scope.status = {
-        signin : false
-    };
-    $scope.initRoom = function () {
-        $http({
-            method: 'GET',
-            url : $scope.webAPI.URL + $scope.webAPI.room + $scope.webAPI.list + "/?peopleID=" + $scope.people.peopleID,
-            headers: { 'Content-Type': 'application/json' },
-            data: null,
-        }).success(function(data, status, headers, config) {
-            $scope.rooms = data.data;
-            
-            // DB登録
-            
-            // 画面表示
-            console.log($scope.rooms);
-            
-        }).error(function(data, status, headers, config) {
-            // 登録済みのエラー
-            $scope.alert("トーク一覧取得エラー", true);
-            // モーダル非表示
-            modal.hide();
-        });
-    };
-    
-    $scope.startTalk = function(roomID){
-        
-        // Roomへサインイン
-        socket.emit('signin',{
-            roomID : roomID,
-            peopleID: $scope.people.peopleID 
-        });
-            
-        
-    };
-   
-    //               
-    socket.on('newPeople',function(text){
-        // ログインしたら部屋へ移動
-        tabbar.loadPage("talk.html");
-        
-
-    });
-    socket.on('newMsg',function(text){
-        console.log(text); 
-    });
-    
-});
-
-
-// コントローラー
-module.controller('boardCtrl', function($scope, $http, $q, $controller) {
-    
-    // 基本コントローラーを継承
-    $controller('baseCtrl', {$scope: $scope});
-    
-    $scope.boardMsg = {
-        peopleID    : "",
-        nicname     : "",
-        imageURL    : "",
-        toBoardID   : "",
-        toPeopleID  : "",
-        toNicname   : "",
-        inline      : "",
-        desc        : ""
-    };    
-    
-    // document.readyの実装
-    angular.element(document).ready(function () {
-        // ピープル情報を取得
-        $scope.getPeople();
-        var options = $scope.indexNavigator.getCurrentPage().options;    
-        //console.log(options);
-        console.log()
-        // オプションでプロフィールが渡ってきたら
-        if (!angular.isUndefined(options.item)) {
-            //console.log(options.item);
-            $scope.boardMsg.toBoardID      = options.item.boardID;
-            $scope.boardMsg.toPeopleID     = options.item.peopleID;
-            $scope.boardMsg.toNicname      = options.item.nicname;
-            $scope.boardMsg.inline         = options.item.desc;
-            $scope.$apply();
-        }
-        // ピープル情報
-        if (!angular.isUndefined(options.people)) {
-            $scope.boardMsg.peopleID       = options.people.peopleID;
-            $scope.boardMsg.nicname        = options.people.nicname;
-            $scope.boardMsg.imageURL       = options.people.imageURL;
-            $scope.$apply();
-        }
-    });
-    $scope.saveBoardMsg = function(newMsg) {
-        
-        var msg = {
-            peopleID : newMsg.peopleID,
-            desc : newMsg.desc
-        };       
-        console.log(msg);
-        $http({
-            method: 'POST',
-            url : $scope.webAPI.URL + $scope.webAPI.board,
-            headers: { 'Content-Type': 'application/json' },
-            data: msg,
-        }).success(function(data, status, headers, config) {
-//            // メインへ遷移
-//            $scope.options.people = $scope.people;
-                
-            $scope.movePage($scope.page.top, $scope.people);
-            //  indexNavigator.pushPage('board.html');  
-            
-            
-        }).error(function(data, status, headers, config) {
-            // 登録済みのエラー
-            $scope.alert("コメント送信エラー", true);
-            // モーダル非表示
-            modal.hide();
-        });
-        
-        
-        
-        
-        
-    };
-    // 新規投稿画面へ遷移
-    $scope.pushMsgPage = function(item) {
-        $scope.options.item = item;
-        $scope.options.people = $scope.people;
-        console.log($scope.people);
-        $scope.movePage($scope.page.message, $scope.options);
-        
-    };
-    $scope.boardCount = 100;
-    $scope.boardItemHeight = 150;
-    $scope.listDelegate = {
-        configureItemScope: function(index, itemScope) {
-            if (!itemScope.item) {
-                console.log("Created item #" + index);
-                itemScope.canceler = $q.defer();
-                itemScope.item = {
-                    boardID  : 'Item #' + (index + 1),
-                    peopleID : 'Item #' + (index + 1),
-                    nicname  : '',
-                    label    : '',
-                    desc     : '',
-                    to       : '',
-                    pref     : '',
-                    sex      : '',
-                    age      : '',
-                    loging   : '',
-                    created  : '',
-                    updated  : '',
-                };
-                $http.get($scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.list + "/?limit=1&offset=" + index, {
-                    timeout: itemScope.canceler.promise
-                }).success(function(data) {
-                    var board = data.data[0];
-                    //console.log(board);
-                    if (data.data.length > 0) {
-                        itemScope.item.boardID = board.boardID;
-                        itemScope.item.peopleID= board.peopleID;
-                        itemScope.item.imageURL= board.imageURL;
-                        itemScope.item.nicname = board.people.nicname;
-                        itemScope.item.desc    = board.desc;
-                        itemScope.item.pref    = board.people.pref;
-                        itemScope.item.sex     = board.people.sex;
-                        itemScope.item.birthDay= board.people.birthDay;
-                        itemScope.item.loging  = board.people.loging;
-                        itemScope.item.created = board.created;
-                        itemScope.item.updated = board.updated;                    
-                    }  else {
-                        $scope.boardCount = index;
-                    }
-                }).error(function() {
-                    console.log("e");
-                    itemScope.item.desc = 'No bacon lorem ipsum';
-                    itemScope.item.label = 'No bacon'
-                });
-            }
-        },
-        calculateItemHeight: function(index) {
-            return $scope.boardItemHeight;
-        },
-        countItems: function() {
-            return $scope.boardCount;
-        },
-        destroyItemScope: function(index, itemScope) {
-            itemScope.canceler.resolve();
-            console.log("Destroyed item #" + index);
-        }
-
-    };
-	
-	
-});
-
-// コントローラー
-module.controller('talkCtrl', function($scope, $http, $q, $controller, socket) {
-    // 基本コントローラーを継承
-    $controller('baseCtrl', {$scope: $scope});
-    // document.readyの実装
-    angular.element(document).ready(function () {
-        var options = $scope.indexNavigator.getCurrentPage().options;    
-        // オプションでプロフィールが渡ってきたら
-        if (!angular.isUndefined(options.people)) {
-            $scope.people.peopleID     = options.people.peopleID;
-            $scope.people._id          = options.people._id;
-            $scope.people.mail         = options.people.mail;
-            $scope.people.password     = options.people.password;
-            $scope.people.nicname      = options.people.nicname;
-            $scope.people.auth         = options.people.auth;
-            $scope.people.token        = options.people.token;
-            $scope.people.loging       = options.people.loging;
-            $scope.people.updated      = options.people.updated;
-            $scope.people.created      = options.people.created;
-            $scope.people.boards       = options.people.boards;
-            $scope.$apply();
-        }
-        console.log($scope.people.peopleID);
-        
-        
-        
-        $scope.initTalk($scope.people.peopleID);
-        
-        
-        
-    });
-//    // ソケット通信テスト
-//    $scope.soketTest = function() {
-//        //接続
-//        var socket = io.connect($scope.socketURL);
-//        socket.on('connect', function() {
-//            console.log('connect!');
-//        });
-//        // サーバーからのテキストを受けてコンソールに表示
-//        socket.on('text',function(text){
-//            console.log(text); // 'socket.io OK!!'がコンソールに表示される
-//        });
-//    };
-//    socket.on('connect', function (data) {
-//        console.log('connect!');
-//    });
-    socket.on('text',function(text){
-        console.log(text); // 'socket.io OK!!'がコンソールに表示される
-    });
-	socket.on('socketerror',function(text){
-        console.log(text); // 'socket.io OK!!'がコンソールに表示される
-    });
-	socket.on('newMsg',function(text){
-        console.log(text); // 'socket.io OK!!'がコンソールに表示される
-    });
-    socket.on('newMessage',function(text){
-        console.log(text); // 'socket.io OK!!'がコンソールに表示される
-    });
-    socket.on('newPeople',function(text){
-        console.log(text); // 'socket.io OK!!'がコンソールに表示される
-    });
-    $scope.initTalk= function (peopleID) {
-        
-        $http({
-            method: 'GET',
-            url : $scope.webAPI.URL + $scope.webAPI.room + $scope.webAPI.list + "/?peopleID=" + "110",
-            headers: { 'Content-Type': 'application/json' },
-            data: null,
-        }).success(function(data, status, headers, config) {
-            
-
-           
-        }).error(function(data, status, headers, config) {
-            // 登録済みのエラー
-            $scope.alert("トーク一覧取得エラー", true);
-            // モーダル非表示
-            modal.hide();
-        });
-        
-    };
-    //$scope.msg = "";
-    $scope.sendMsgggg = function () {
-        
-        socket.emit('signin',{
-                    name : "",
-                    avatar : "http://file.local-c.com/uploads/lcchat/logo40.png",
-                    roomID : "1",
-                    peopleID: "101" 
-                });
-        
-        // 2/spika,["sendMessage",{"message":"ggg","roomID":"1","userID":"1","type":1,"localID":"_k2QVjyKAPD1zmnA6Mwcm9PsJxTuSsKLs"}]
-        //socket.emit('hoge',$scope.msg);
-        // Emit data to server
-//        socket.emit('sendMessage',{
-//            message: $scope.msg,
-//            roomID: 1,
-//            userID: 1,
-//            type:1,
-//            localID: "_k2QVjyKAPD1zmnA6Mwcm9PsJxTuSsKLs"
-//        });
-//		socket.emit('sendMsg',{
-//            message: $scope.msg,
-//            roomID: 1,
-//            peopleID: 101,
-//            type:1,
-//            localID: 'sfdfd'
-//        });
-        
-//        $scope.talkList.push({
-//            imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png",
-//            msg      : $scope.msg,
-//            self     : 0,
-//        });
-    },
-    $scope.talkList = [
-        {
-            
-            peopleID : "1",
-            people   : {imageURL : "http://file.local-c.com/uploads/lcchat/logo40.png"},
-            msg      : "ほげほげ"
-        },
-        {
-            peopleID : "2",
-            people   : {imageURL : "http://file.local-c.com/uploads/mimicry/noimage.png"},
-            msg      : "ほげほげ"
-
-        }
-    ];
-    
-
-});
-
-// コントローラー
-module.controller('MyCtrl', function($scope, $http, $q, $controller) {
-    $scope.MyDelegate = {
-      configureItemScope: function(index, itemScope) {
-        if (!itemScope.item) {
-          console.log("Created item #" + index);
-          itemScope.canceler = $q.defer();
-
-          itemScope.item = {
-            title: 'Item #' + (index + 1),
-            label: '',
-            desc: '',
-            rand: Math.random()
-          };
-          $http.get('https://baconipsum.com/api/?type=meat-and-filler&sentences=1', {
-            timeout: itemScope.canceler.promise
-          }).success(function(data) {
-            console.log("success" + data[0]);
-            itemScope.item.desc = data[0];
-            itemScope.item.label = itemScope.item.desc.substr(0, itemScope.item.desc.indexOf(" ")) + 'bacon'
-          }).error(function() {
-            itemScope.item.desc = 'No bacon lorem ipsum';
-            itemScope.item.label = 'No bacon'
-          });
-        }
-      },
-      calculateItemHeight: function(index) {
-        return 91;
-      },
-      countItems: function() {
-        return 10000000;
-      },
-      destroyItemScope: function(index, itemScope) {
-        itemScope.canceler.resolve();
-        console.log("Destroyed item #" + index);
-      }
-    };
-
-});
 
 module.filter('substr', function() {
     return function(input, from, to) {
