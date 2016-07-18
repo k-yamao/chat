@@ -21,14 +21,14 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         navigator.splashscreen.hide();
         // オンラインになったとき、このイベントが発火
         document.addEventListener("online", function(){
-                console.log('オンライン');
+                modal.hide();
                 
                 
         }, false);
         //アプリがオフラインになったときに、このイベントが発火
         document.addEventListener("offline", function(){
-                console.log('オフライン');
                 
+                modal.show();
                 
         }, false);
         
@@ -48,7 +48,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             
             // メインページへ遷移したあとの処理
             if (event.enterPage.name == $scope.page.main) {
-                $scope.newMsgAlert = true;
                 $scope.initRoom();
             }
         
@@ -56,9 +55,12 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // pageがpushされてアニメーションが終了してから発火
         indexNavigator.on('postpush', function(event) {
 
+            console.log(event.enterPage.name);
             // トークページへ遷移したらアラートを表示しない
             if (event.enterPage.name == $scope.page.talk) {
                 $scope.newMsgAlert = false;
+            } else {
+                $scope.newMsgAlert = true;
             }
             
             // メインページへ遷移したあとの処理
@@ -68,7 +70,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 $scope.initBoard();
                 
                 $scope.initRoom();
-                
                 /**
                  * タブのイベントを設定
                  */                
@@ -134,23 +135,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // オートログインの期間
     $scope.autoLoginTime = Math.floor( new Date().getTime() / 1000 ) - 5184000; // 2ヶ月前
     $scope.networkState = false;
-    // ネットワークオンラインチェック    
-    $scope.onlineEvent = function() {
-        ons.notification.alert({
-          title: 'online',
-          message:'オンラインです。' ,
-          modifier: material ? 'material' : undefined
-        });
-        $scope.networkState = true;
-    };
-    $scope.offlineEvent = function() {
-        ons.notification.alert({
-          title: 'offline',
-          message:'オフラインです。' ,
-          modifier: material ? 'material' : undefined
-        });
-        $scope.networkState = false;
-    };
+    
     // ネットワークオンラインチェック    
     $scope.isOnline = function() {
         if (navigator.connection.type != "none") {
@@ -1212,6 +1197,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         };
         
         ons.notification.confirm({
+          title: '確認',
           message: 'チャットルームを削除しますか?',
           modifier: mod,
           callback: function(idx) {
@@ -1336,8 +1322,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     });
     socket.on('newMsg',function(data){
 
-        
-        //console.log(JSON.stringify(data));
         console.log(data.msg);
         console.log($scope.newMsgAlert);
         if ($scope.talk.roomID == data.roomID && (data.msg != "" || data.file.thumb.id != '') && data.msg != "join") {
@@ -1602,9 +1586,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         };
     
         ons.notification.confirm({
-          message: 'この投稿を通報しますか?',
-          modifier: mod,
-          callback: function(idx) {
+            title: '確認',
+            message: 'この投稿を通報しますか?',
+            modifier: mod,
+            callback: function(idx) {
             switch (idx) {
               case 0:
                 break;
@@ -1641,6 +1626,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             
         };
         ons.notification.confirm({
+          title: '確認',
           message: 'この投稿を削除しますか?',
           modifier: mod,
           callback: function(idx) {
@@ -1851,11 +1837,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     // 利用規約
     $scope.agreement = function() {
-       window.open('http://apache.org', '_blank', 'location=yes');
+       window.open('http://street.local-c.com/rule.html', '_blank', 'location=yes');
     };
     // プライバシーポリシー
     $scope.privacy   = function() {
-       window.open('http://apache.org', '_blank', 'location=yes');
+       window.open('http://street.local-c.com/privacy.html', '_blank', 'location=yes');
     };    
     
     // 退会 People削除
