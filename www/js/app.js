@@ -18,7 +18,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 	
   	// document ready
     angular.element(document).ready(function () {
-        navigator.splashscreen.hide();
+		
+		if ( monaca.isIOS ) {
+			$scope.device.os = 'ios';
+        	navigator.splashscreen.hide();
+			
+    	} else if ( monaca.isAndroid ) {
+            $scope.device.os = 'android';
+    	} else {
+			$scope.device.os = 'etc';
+		}
+		
+        
         // オンラインになったとき、このイベントが発火
         document.addEventListener("online", function(){
                 modal.hide();
@@ -55,7 +66,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         // pageがpushされてアニメーションが終了してから発火
         indexNavigator.on('postpush', function(event) {
 
-            console.log(event.enterPage.name);
             // トークページへ遷移したらアラートを表示しない
             if (event.enterPage.name == $scope.page.talk) {
                 $scope.newMsgAlert = false;
@@ -148,6 +158,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     $scope.device = {
         id : null,
+		os : ''
     };
     $scope.options = {
           animation: 'slide', // アニメーションの種類
@@ -1848,6 +1859,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // プライバシーポリシー
     $scope.privacy   = function() {
        window.open('http://street.local-c.com/privacy.html', '_blank', 'location=yes');
+    };    
+	// FAQ
+    $scope.faq   = function() {
+       window.open('http://street.local-c.com/faq.html', '_blank', 'location=yes');
     };    
     
     // 退会 People削除

@@ -12,6 +12,11 @@
 </ons-button>
 <br>
     <br>
+	<br>
+	<br>
+	<ons-button modifier="quiet" class="forgot-password" ng-show="device.os == 'etc'" ng-click="privacy()">プライバシーポリシー</ons-button>
+    <ons-button modifier="quiet" class="forgot-password" ng-show="device.os == 'etc'" ng-click="agreement()">利用規約</ons-button>
+	<ons-button modifier="quiet" class="forgot-password" ng-show="device.os == 'etc'" ng-click="faq()">FAQ</ons-button>
 </div>
 <ons-modal var="modal">
   <ons-icon icon="ion-load-c" spin="true"></ons-icon>
