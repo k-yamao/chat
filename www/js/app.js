@@ -377,7 +377,13 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                             (function(tx, results) {    // テーブル作成、空レコード作成成功
                                 // トップページのままでOK
                                 // Todo初期処理で他になにかあれば記載
+                                
+                                // トップページでボタンを表示
+                                $scope.signinStatus = true;
+                                $scope.$apply(); 
                             }));
+                            
+                            
                         return false;
                     }
                 }), $scope.errorDB);
