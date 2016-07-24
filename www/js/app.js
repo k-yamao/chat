@@ -5,7 +5,7 @@ document.addEventListener ("deviceready", onDeviceReady, false);
 
 
 function onDeviceReady () {
-    navigator.splashscreen.hide();
+    //navigator.splashscreen.hide();
 }
 
 //document.addEventListener("offline", function(){console.log('nettest');}, false);
@@ -39,7 +39,15 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         //アプリがオフラインになったときに、このイベントが発火
         document.addEventListener("offline", function(){
                 
-                modal.show();
+			var page = indexNavigator.getCurrentPage().page;
+			// メイン画面からの戻るは
+			if(page == $scope.page.talk || page == $scope.page.profileEdit) {
+				indexNavigator.popPage();
+				modal.show();
+			}
+			
+				
+			modal.show();
                 
         }, false);
 
@@ -122,7 +130,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     var page = event.currentPage.page; 
                     
                     // メイン画面からの戻るは
-                    if(page == 'main.html') {
+                    if(page == $scope.page.main) {
                          event.cancel();
                     }
                 });
@@ -166,18 +174,23 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // オートログインの期間
     $scope.autoLoginTime = Math.floor( new Date().getTime() / 1000 ) - 5184000; // 2ヶ月前
     $scope.networkState = false;
-    $scope.checkConnection =  function() {
-        var networkState = navigator.connection.type;
-    };
+    
     // ネットワークオンラインチェック    
     $scope.isOnline = function() {
-        if (navigator.connection.type != "none") {
-            $scope.networkState = true;
-            return true;
-        } else {
-            $scope.networkState = false;
-            return false;
-        }
+		if ($scope.device.os != "etc") {
+			if (navigator.connection.type != "none") {
+				$scope.networkState = true;
+				return true;
+        	} else {
+				$scope.networkState = false;
+				return false;
+        	}
+		} else {
+			
+			$scope.networkState = navigator.onLine;
+			return $scope.networkState;
+		}
+        
     };
     $scope.device = {
         id : null,
@@ -432,6 +445,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     $scope.errorDB = function (err) {
         console.log("SQL 実行中にエラーが発生しました: " + err.code);
         $scope.alert('データベースエラー', true);
+		// トップページでボタンを表示
+		$scope.signinStatus = true;
+		$scope.$apply(); 
     };
     // ピープルテーブルの更新
     $scope.updatePeople = function(){
@@ -490,28 +506,35 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     
     // プロフィール写真を設定するとき処理
     $scope.snapPicture = function(type) {
-        // カメラ撮影 or ライブラリ選択
-        navigator.camera.getPicture (onSuccess, onFail, 
-                { 
-                    quality: 100, 
-                    destinationType: Camera.DestinationType.FILE_URI,
-                    sourceType: type,
-                    allowEdit: true,
-                    targetWidth: 500,
-                    targetHeight: 500,
-                    correctOrientation: true, // 撮影時と同じ向きに写真を回転
-                    saveToPhotoAlbum: false, // 撮影後、端末のアルバムに画像を保存
-                }
-            );
-        // 画像取得に成功してモデルにセットし、HTMLにも設定
-        function onSuccess (imageURI) {
-            $scope.people.imageFile = imageURI;
-            document.getElementById('picture').src = imageURI;
-        }
-        // 画像取得に失敗
-        function onFail (message) {
-            $scope.alert("画像が選択されませんでした。", true);
-        }
+		if ($scope.device.os != "etc") {
+			// カメラ撮影 or ライブラリ選択
+			navigator.camera.getPicture (onSuccess, onFail, 
+					{ 
+						quality: 100, 
+						destinationType: Camera.DestinationType.FILE_URI,
+						sourceType: type,
+						allowEdit: true,
+						targetWidth: 500,
+						targetHeight: 500,
+						correctOrientation: true, // 撮影時と同じ向きに写真を回転
+						saveToPhotoAlbum: false, // 撮影後、端末のアルバムに画像を保存
+					}
+				);
+			// 画像取得に成功してモデルにセットし、HTMLにも設定
+			function onSuccess (imageURI) {
+				$scope.people.imageFile = imageURI;
+				document.getElementById('picture').src = imageURI;
+			}
+			// 画像取得に失敗
+			function onFail (message) {
+				$scope.alert("画像が選択されませんでした。", true);
+			}
+		} else {
+			// webからの処理いつか実装
+			
+			
+			
+		}
     };
     // チャット用の写真を設定するとき処理
     $scope.snapChatPicture = function(type) {
