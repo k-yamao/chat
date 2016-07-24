@@ -42,6 +42,23 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 modal.show();
                 
         }, false);
+
+        
+        
+        
+        // document.addEventListener("backbutton", function(){
+        //     
+        //     console.log('バックボタン');
+        //     //console.log(indexNavigator.getCurrentPage());
+        //     var p = indexNavigator.getCurrentPage();
+        //     ons.notification.alert({
+        //       title  : 'バックボタン',
+        //       message: p
+        //     });
+        //     
+        // }, false);
+        
+        
         
         // デバイスIDを取得し、ものまねリストを取得する
         monaca.getDeviceId(function(id){
@@ -98,13 +115,17 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     //console.log('tab prechange:タブが変わった前');
                     
                 });
-                
-                
+                                
                 // pageがpushされる直前に発火されます。
-                // indexNavigator.on('prepush', function(event) {
-                //     var page = event.currentPage; // 現在のページオブジェクトを取得する
-                //     console.log(page.name);
-                // });
+                indexNavigator.on('prepop', function(event) {
+                    // 現在のページオブジェクトを取得する
+                    var page = event.currentPage.page; 
+                    
+                    // メイン画面からの戻るは
+                    if(page == 'main.html') {
+                         event.cancel();
+                    }
+                });
                 
                 // アクティブなタブが変わった後
                 // tabbar.on('postchange', function(event) {
@@ -145,7 +166,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     // オートログインの期間
     $scope.autoLoginTime = Math.floor( new Date().getTime() / 1000 ) - 5184000; // 2ヶ月前
     $scope.networkState = false;
-    
+    $scope.checkConnection =  function() {
+        var networkState = navigator.connection.type;
+    };
     // ネットワークオンラインチェック    
     $scope.isOnline = function() {
         if (navigator.connection.type != "none") {
@@ -327,7 +350,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                         $scope.people.updated    = p.updated;
                                         $scope.people.created    = p.created;
                                         
-                                        if ($scope.people.peopleID != "") {
+                                        if ($scope.people.peopleID != "" && $scope.isOnline()) {
+                                            
                                             /**
                                              * サインイン
                                              */
