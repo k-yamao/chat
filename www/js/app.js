@@ -86,6 +86,18 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             if (event.enterPage.name == $scope.page.main) {
                 $scope.initRoom();
             }
+            
+            // トークページへ遷移したらアラートを表示しない
+            if (event.enterPage.name == $scope.page.talk) {
+                $scope.newMsgAlert = false;
+            } else {
+                $scope.newMsgAlert = true;
+            }
+            
+            console.log('========');
+            console.log($scope.newMsgAlert);
+            console.log(event.enterPage.name);
+            console.log('========');
         
         });
         // pageがpushされてアニメーションが終了してから発火
@@ -97,6 +109,11 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             } else {
                 $scope.newMsgAlert = true;
             }
+            
+            console.log('----------');
+            console.log($scope.newMsgAlert);
+            console.log(event.enterPage.name);
+            console.log('----------');
             
             // メインページへ遷移したあとの処理
             if (event.enterPage.name == $scope.page.main) {
@@ -151,6 +168,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
         
     });
+    $scope.newMsgAlert = true;
     $scope.webAPI = {
         URL    : "http://" + host + "/spika/v1",
         people  : "/people",
@@ -167,7 +185,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         change  : "/change",
         read    : "/read"
     };
-    $scope.newMsgAlert = true;
+    
     $scope.imgBaseURL = "http://spika.local-c.com:3000/spika/v1/file/download/";
     // ボードのデフォルト検索検索LIMIT
     $scope.boardListLimit = 200;
@@ -211,12 +229,14 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         talk        : 'talk.html',		    // トーク
         signup      : 'signup.html',		// 新規登録
         login       : 'login.html',			// ログイン
+        signin      : 'signin.html',    	// サイイン
         auth        : 'auth.html',			// 認証ページ
         top         : 'top.html',    		// トップページ
         password    : 'password.html'    	// パスワード初期化
     };
     // 画面遷移イベント
     $scope.movePage = function(page, options) {
+        
         // オプションの指定がなければ、デフォルトオプション
         if (angular.isUndefined(options)){
             indexNavigator.pushPage(page, $scope.options);
@@ -723,6 +743,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
      *******************************************************************/
      $scope.initPassword = function(){
          
+         // モーダル表示
+        modal.show();
+         
          // トークリストを取得 
         $http({
             method: 'GET',
@@ -731,12 +754,20 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             data: null,
         }).success(function(data, status, headers, config) {
 
+            // モーダル非表示
+            modal.hide();
             ons.notification.alert({
                 title: '',
                 message: 'パスワードを初期化しました。メールを確認してください。'
             });
-
+            
+            
+            $scope.movePage($scope.page.signin);
+            
         }).error(function(data, status, headers, config) {
+            
+            // モーダル非表示
+            modal.hide();
             ons.notification.alert({
                 title: '',
                 message: 'パスワードの初期化に失敗しました。'
@@ -1386,12 +1417,21 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     });
     socket.on('newMsg',function(data){
 
+        console.log('#############');
         console.log(data.msg);
         console.log($scope.newMsgAlert);
-        if ($scope.talk.roomID == data.roomID && (data.msg != "" || data.file.thumb.id != '') && data.msg != "join") {
+        console.log('###');
+        console.log(data);
+        
+        console.log(data.roomID);
+        console.log(data.msg);
+        console.log(!angular.isUndefined(data.file));
+        console.log('#############');
+        
+        if (!$scope.newMsgAlert && $scope.talk.roomID == data.roomID && (data.msg != "" || (!angular.isUndefined(data.file) && data.file.thumb.id != '')) && data.msg != "join") {
             $scope.talkList.push(data);    
             $scope.scrollMsg(300);
-       
+            console.log("hogssse");
         } else if ($scope.newMsgAlert){
 
             console.log("hoge" + data.msg);
@@ -1405,8 +1445,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
          
     });
     $scope.readMsg  = function (roomID) {
-        console.log($scope.webAPI.URL + $scope.webAPI.msg + $scope.webAPI.list + $scope.webAPI.read + '/' + roomID + '/' + $scope.people.peopleID);
-        // APIから取得？
+
         // トークリストを取得 
         $http({
             method: 'GET',
@@ -1437,7 +1476,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         setTimeout(function() {
             var timelineElement = document.getElementsByClassName('timeline')[0];
             timelineHight = timelineElement.scrollHeight;
-            //console.log(timelineHight);
+            console.log(timelineHight);
             timelineElement.scrollTop = timelineHight;
         }, sec);
         
@@ -1904,18 +1943,17 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
        window.open('http://street.local-c.com/rule.html', '_blank', 'location=yes');
     };
     // プライバシーポリシー
-    $scope.privacy   = function() {
+    $scope.privacy = function() {
        window.open('http://street.local-c.com/privacy.html', '_blank', 'location=yes');
     };    
 	// FAQ
-    $scope.faq   = function() {
-       window.open('http://street.local-c.com/faq.html', '_blank', 'location=yes');
+    $scope.faq = function() {
+        console.log(123);
+        window.open('http://street.local-c.com/faq.html', '_blank', 'location=yes');
     };    
-    
     // 退会 People削除
     $scope.removePeople = function() {
-        
-        //console.log($scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.delete + '/' + $scope.people.peopleID);
+
         // トークリストを取得 
         $http({
             method: 'GET',
