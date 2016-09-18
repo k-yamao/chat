@@ -23,6 +23,7 @@
         "cordova-plugin-file@4.2.0",
         "cordova-plugin-file-transfer@1.5.1",
         "cordova-plugin-device-orientation@1.0.3",
-        "cordova-plugin-network-information@1.2.1"
+        "cordova-plugin-network-information@1.2.1",
+        "cordova-custom-config@2.0.3"
     ]
 }

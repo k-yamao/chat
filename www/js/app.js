@@ -94,10 +94,10 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                 $scope.newMsgAlert = true;
             }
             
-            console.log('========');
-            console.log($scope.newMsgAlert);
-            console.log(event.enterPage.name);
-            console.log('========');
+            // console.log('========');
+            // console.log($scope.newMsgAlert);
+            // console.log(event.enterPage.name);
+            // console.log('========');
         
         });
         // pageがpushされてアニメーションが終了してから発火
@@ -109,11 +109,6 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             } else {
                 $scope.newMsgAlert = true;
             }
-            
-            console.log('----------');
-            console.log($scope.newMsgAlert);
-            console.log(event.enterPage.name);
-            console.log('----------');
             
             // メインページへ遷移したあとの処理
             if (event.enterPage.name == $scope.page.main) {
@@ -247,8 +242,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     // 内部ブラウザを起動
     $scope.openWindow = function(url) {
-        console.log(url);
-       window.open(url, '_blank', 'location=yes');
+        //console.log(url);
+        window.open(url, '_blank', 'location=yes');
     };
     // 画面遷移
     $scope.movePopPage = function(options) {
@@ -463,7 +458,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     // データベースのエラー時の処理（アラート）
     $scope.errorDB = function (err) {
-        console.log("SQL 実行中にエラーが発生しました: " + err.code);
+        //console.log("SQL 実行中にエラーが発生しました: " + err.code);
         $scope.alert('データベースエラー', true);
 		// トップページでボタンを表示
 		$scope.signinStatus = true;
@@ -592,7 +587,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                     $scope.talk.thumb = res.data.thumb;
                     $scope.sendImgMsg();
                 } else {
-                    console.log(2222222222);
+                    //console.log(2222222222);
                 }
                 
             };
@@ -844,7 +839,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 
                 }
             }).error(function(data, status, headers, config) {
-                console.log(data);
+                //console.log(data);
                 // モーダル非表示
                 modal.hide();
                 //     
@@ -1048,7 +1043,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };
     // type : 1:画像ファイル、2:音声ファイル
     $scope.uploadFile = function(mediaFile, type, device_id, ex) {
-        console.log(mediaFile);
+        //console.log(mediaFile);
         var deferred = $q.defer();
         var ft       = new FileTransfer();
         var path     = mediaFile;
@@ -1057,7 +1052,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         
         options.fileKey = "file";
         options.fileName = mediaFile.substr(mediaFile.lastIndexOf('/') + 1);
-        console.log(options.fileName);
+        //console.log(options.fileName);
         params.type = type;
         params.filename = device_id;
         params.ex = ex;
@@ -1067,9 +1062,9 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         //deferred.notify({});// 処理の通知を示す 
         var upSuccess = function(result) {
             var data = JSON.parse(result.response);
-            console.log(result.response);
-            console.log(data.code);
-            console.log(JSON.stringify(data));
+            // console.log(result.response);
+            // console.log(data.code);
+            // console.log(JSON.stringify(data));
             if (data.code == 200) {
                 if (data.type == 2) {
                     // 音声ファイル
@@ -1102,7 +1097,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         $scope.alert("プロフィール登録エラー", true);
     };    
     $scope.notifyProfile = function() {
-        console.log("プロフィール登録開始・・・");
+        //console.log("プロフィール登録開始・・・");
     };    
     $scope.dialogs = {};
     $scope.show = function(dlg) {
@@ -1359,7 +1354,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     
             var element = document.getElementsByClassName("timeline-li");
             for (var i=0;i<element.length;i++) {
-                console.log(element[i].style.borderBottom);
+                //console.log(element[i].style.borderBottom);
               element[i].style.borderBottom = "none"
             }
             
@@ -1417,24 +1412,24 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     });
     socket.on('newMsg',function(data){
 
-        console.log('#############');
-        console.log(data.msg);
-        console.log($scope.newMsgAlert);
-        console.log('###');
-        console.log(data);
-        
-        console.log(data.roomID);
-        console.log(data.msg);
-        console.log(!angular.isUndefined(data.file));
-        console.log('#############');
+        // console.log('#############');
+        // console.log(data.msg);
+        // console.log($scope.newMsgAlert);
+        // console.log('###');
+        // console.log(data);
+        // 
+        // console.log(data.roomID);
+        // console.log(data.msg);
+        // console.log(!angular.isUndefined(data.file));
+        // console.log('#############');
         
         if (!$scope.newMsgAlert && $scope.talk.roomID == data.roomID && (data.msg != "" || (!angular.isUndefined(data.file) && data.file.thumb.id != '')) && data.msg != "join") {
             $scope.talkList.push(data);    
             $scope.scrollMsg(300);
-            console.log("hogssse");
+            //console.log("hogssse");
         } else if ($scope.newMsgAlert){
 
-            console.log("hoge" + data.msg);
+            //console.log("hoge" + data.msg);
             
             ons.notification.alert({
               title: data.people.nicname + 'さんから新着メッセージ',
@@ -1476,7 +1471,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
         setTimeout(function() {
             var timelineElement = document.getElementsByClassName('timeline')[0];
             timelineHight = timelineElement.scrollHeight;
-            console.log(timelineHight);
+            //console.log(timelineHight);
             timelineElement.scrollTop = timelineHight;
         }, sec);
         
@@ -1531,7 +1526,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };    
     $scope.saveBoardMsg = function() {
        
-        console.log($scope.boardMsg.desc);
+        //console.log($scope.boardMsg.desc);
         if ($scope.boardMsg.desc == "") {
             $scope.alert('メッセージが入力されていません。');
             return;
@@ -1803,7 +1798,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
             "peoplePickID": item.peopleID,
         };
         
-        console.log($scope.webAPI.URL + $scope.webAPI.pick);
+        //console.log($scope.webAPI.URL + $scope.webAPI.pick);
         $http({
             method: 'POST',
             url : $scope.webAPI.URL + $scope.webAPI.pick,
@@ -1948,7 +1943,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
     };    
 	// FAQ
     $scope.faq = function() {
-        console.log(123);
+        //console.log(123);
         window.open('http://street.local-c.com/faq.html', '_blank', 'location=yes');
     };    
     // 退会 People削除
@@ -2023,7 +2018,7 @@ module.directive('a', function() {
   return {
     restrict: 'E',
     link: function(scope, elem, attrs) {
-        console.log(attrs);
+        //console.log(attrs);
       if(attrs.ngClick || attrs.href === '' || attrs.href === '#'){
         elem.on('click', function(e){
           e.preventDefault();
