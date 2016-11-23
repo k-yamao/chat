@@ -96,6 +96,7 @@
   <preference name="Orientation" value="default"/>
   <preference name="SplashScreenDelay" value="9223372036854775807"/>
   <preference name="Fullscreen" value="false"/>
+  <preference name="ios-XCBuildConfiguration-TARGETED_DEVICE_FAMILY" value="1,2"/>
   <preference name="WindowsStorePublisherName" value="My Name"/>
-  <preference name="WindowsStoreIdentityName" value="07cab523-8a09-615f-7baa-5b0defa41540"/>
+  <preference name="WindowsStoreIdentityName" value="90dc680f-1b33-5c3c-91be-01b5b304cfd0"/>
 </widget>
