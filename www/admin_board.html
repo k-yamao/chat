@@ -1,0 +1,164 @@
+<ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">ボード確認、削除</div>
+</ons-toolbar>
+<ons-page>
+	
+	<ons-scroller style="height:100%">
+        <ons-list-item modifier="noborder" class="item" ng-repeat="item in boards">
+            <ons-row  modifier="noborder" >
+                <ons-col width="60px"> 
+                    <!--div class="item-thum"></div-->
+                    <img ng-src="{{item.people.imageURL}}" class="thumbnail" ng-click="pushProfile(item.people)"/>
+                </ons-col>
+                <ons-col>
+                    <header class="profilebox">
+                        <span class="item-title">{{item.people.nicname}}</span>
+                        <span class="item-label">{{item.created|customDate4}}</span>
+                    </header>
+                    <div class="profilebox">
+                        <i class="fa fa-map-marker board-i"></i>{{item.people.pref}}
+                        <i class="fa fa-user board-i"></i>{{item.people.sex}}
+                        <i class="fa fa-birthday-cake board-i"></i>{{item.people.birthDay|customDate3}}
+                    </div>
+                    <div ng-show="item.nicnameTo != ''" class="profilebox">To:&nbsp;{{item.nicnameTo}}</div>
+                </ons-col>
+            </ons-row>
+            <ons-row class="desc-row">
+                <p class="item-desc" ng-bind-html="item.desc | nl2br"></p>
+            </ons-row>
+            <ons-row>
+                
+               
+                <i class="fa fa-trash list-icon" ng-click="removeBoard(item);"></i>
+            </ons-row>
+        </ons-list-item>
+    </ons-scroller>
+
+<ons-modal var="modal">
+  <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+  <br>
+  <br> Please wait.
+</ons-modal>
+
+<style>
+.logo {
+    width: 200px;
+    height: 200px;
+    background-image: url("img/street_logo_200x200.png");
+    //background-image: url("img/street_logo_200x200_f9f9f9.png");
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px #e9e9e9;
+}
+
+ .search-active {
+	font-size: 26px; 
+	vertical-align: -4px;
+	color: red;
+}
+.search-none {
+	font-size: 26px; 
+	vertical-align: -4px;
+}
+.board-i{
+	padding-left: 5px;
+	padding-right: 2px;
+
+}
+.loader-container {
+   width: 40px; 
+   margin: 10px auto;
+   vertical-align: middle;
+}
+.list-item-container {
+  line-height: 1;
+  padding: 15px 0px 15px 15px;
+}
+
+.thumbnail {
+  width: 55px;
+  height: 55px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+
+.name {
+  font-weight: 500;
+  line-height: 16px;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+.profilebox {
+  font-size: 14px;
+  opacity: 0.4;
+  margin-bottom: 5px;
+}
+
+.location {
+  font-size: 14px;
+  opacity: 0.4;
+  margin-bottom: 6px;
+}
+
+.desc {
+  line-height: 1.2;
+  font-size: 13px;
+}
+.item {
+	  padding: 10px;
+	  line-height: 1;
+}
+.item-thum {
+  background-color: #ccc;
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+}
+.item-title {
+  font-size: 15px;
+  font-weight: 500;
+
+}
+.item-desc {
+   -webkit-user-select: auto;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.3;
+  //margin: 4px 0 4px 3px;
+  padding: 0 0 0 0;
+}
+.desc-row{
+	-webkit-user-select: auto;
+	padding: 0px 5px 10px 5px;
+}
+.item-label {
+  font-size: 12px;
+  color: #999;
+  float: right;
+}
+.list-button {
+	width: 23%;
+	height: 30px;
+	font-size: 8pt;
+	text-align: center;
+	line-height: 20px;
+	margin: 0 5px 0 0;
+}
+.list-icon {
+	width: 25%;
+	font-size:16pt;
+	text-align: center;
+	margin: 5px 0 0 0;
+}
+.list-flag {
+	width: 23%;
+	font-size:16pt;
+	text-align: center;
+	margin: 5px 0 0 0;
+}
+</style>
+
+</ons-page>
+
+

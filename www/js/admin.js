@@ -18,35 +18,32 @@ module.controller('adminCtrl', function($scope, $http, $sce, $q, $anchorScroll, 
 	
   	// document ready
     angular.element(document).ready(function () {
-		// 初期処理
-		$scope.initApp();
 		
-		adminNavigator.on('prepush', function(e) {
+		
+		adminNavigator.on('postpush', function(event) {
+			// レポート画面
+			if(event.enterPage.name == "admin_report.html") {
+				console.log(event.enterPage.name);
+				// レポート取得
+				$scope.initReport();
+			}
 
-			
+			// ボード確認
+			if(event.enterPage.name == "admin_board.html") {
+				console.log(event.enterPage.name);
+				 // ボード取得
+				$scope.initBoard();
+			}
 		});
 
-		adminNavigator.on('postpush', function(e) {
-//			console.log(e.getCurrentPage().page);
-//			if(e.currentPage.page == $scope.page.areport) {
-//				console.log($scope.page.areport);
-//			}
-			
-			
-			
+		adminNavigator.on('prepush', function(event) {
 		});
 
 		adminNavigator.on('prepop', function(e) {
-			
 		});
 
 		adminNavigator.on('postpop', function(e) {
-			
 		});
-
-
-		
-		
     });
     $scope.webAPI = {
         URL    : "http://" + host + "/spika/v1",
@@ -99,35 +96,7 @@ module.controller('adminCtrl', function($scope, $http, $sce, $q, $anchorScroll, 
 		msg         : 'a-msg.html',    	// パスワード初期化
 		main    	: 'a-main.html'    	// パスワード初期化
     };
-    // 画面遷移イベント
-    $scope.movePage = function(page) {
-        // オプションの指定がなければ、デフォルトオプション
-        if (page == $scope.page.areport){
-
-        } else if (page == $scope.page.areport) {
-			
-		}
-		
-
-        adminNavigator.pushPage(page);
-    };
-    // 内部ブラウザを起動
-    $scope.openWindow = function(url) {
-        console.log(url);
-       window.open(url, '_blank', 'location=yes');
-    };
-    // 画面遷移
-    $scope.movePopPage = function(options) {
-        
-        // オプションの指定がなければ、デフォルトオプション
-        if (angular.isUndefined(options)){
-            adminNavigator.popPage($scope.options);
-        } else {
-            // 指定がなければ、引数のオプション
-            adminNavigator.popPage(options);
-        }
-        
-    };
+    
     $scope.people = {
         peopleID    : "",
         mail        : "",
@@ -160,440 +129,14 @@ module.controller('adminCtrl', function($scope, $http, $sce, $q, $anchorScroll, 
           modifier: material ? 'material' : undefined
         });
     };
-    
-    $scope.db     = null;
-    $scope.istable = false;
-    $scope.conf = {
-        "database_name"         : "database",   // DB名
-        "database_version"      : "1.0",        // バージョン
-        "database_displayname"  : "chatdb",   // 表示名
-        "database_size"         : 2000000    // サイズ
-    };
-    
-    // クエリー
-    $scope.query = {
-        checkPeopleTable    : 'SELECT COUNT(*) cnt FROM sqlite_master WHERE type="table" AND name="People"',
-        dropTabelPeople     : 'DROP TABLE IF EXISTS People',
-        createTabelPeople   : 'CREATE TABLE IF NOT EXISTS People (_id text, peopleID text, mail text, password text, nicname text, imageURL text, auth text, token text, sex text, birthDay text, pref text, city text, appeal text, phrase text, loging text, updated text, created text)',
-        insertTabelPeople   : 'INSERT INTO People (_id, peopleID, mail, password, nicname, imageURL, auth, token, sex, birthDay, pref, city, appeal, phrase, loging, updated, created) VALUES ("","","","","","","","","","","","","","","","","")',
-        selectTabelPeople   : 'SELECT _id, peopleID, mail, password, nicname, imageURL, auth, token, sex, birthDay, pref, city, appeal, phrase, loging, updated, created FROM People',
-        updateTabelPeople   : 'UPDATE People SET ',
-        deleteTabelPeople   : 'DELETE FROM People',
-        
-    };
-    
-    /*******************************************************************
-     * アプリ起動時、トップ画面 [top.html]
-     *******************************************************************/
-    $scope.signinStatus = false;
-    $scope.initApp = function() {        /**
-         * DBからメール、パスワード、ログイン期間を取得
-         */         
-        // データベースオブジェクト取得
-        //$scope.db = $scope.getDB();
-        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
-        
-        // テーブル存在チェック
-        db.transaction((function (tx) {
-            // テーブルチェック
-            tx.executeSql($scope.query.checkPeopleTable, [], 
-                (function(tx, results) {
-                    // Peopleテーブル存在して
-                    if (results.rows.item(0).cnt > 0) {
-                    //if (false) {
-                        //modal.show();
-                        // 認証処理
-                        // ピープルデータ取得
-                        db.transaction(
-                            (function (tx) {
-                                tx.executeSql(
-                                    $scope.query.selectTabelPeople, 
-                                    [], 
-                                    // ピープルデータの取得に成功
-                                    (function(tx, results) {
-                                        var nU = Math.floor( new Date().getTime() / 1000 ) ;
-                                        var p = results.rows.item(0);
-                                        $scope.people._id        = p._id;
-                                        $scope.people.peopleID   = p.peopleID;
-                                        $scope.people.mail       = p.mail;
-                                        $scope.people.password   = p.password;
-                                        $scope.people.nicname    = p.nicname;
-                                        $scope.people.imageURL   = p.imageURL == "" ? "http://file.local-c.com/uploads/mimicry/noimage.png" : p.imageURL;
-                                        $scope.people.sex        = p.sex;
-                                        $scope.people.birthDay   = p.birthDay;
-                                        $scope.people.pref       = p.pref;
-                                        $scope.people.city       = p.city;
-                                        $scope.people.appeal     = p.appeal;
-                                        $scope.people.phrase     = p.phrase;
-                                        $scope.people.auth       = p.auth;
-                                        $scope.people.token      = p.token;
-                                        $scope.people.loging     = p.loging;
-                                        $scope.people.updated    = p.updated;
-                                        $scope.people.created    = p.created;
-										
-										/**
-										 * サインイン
-										 */
-										$scope.signin(false);
-
-                                    }), $scope.errorDB);
-                            }), 
-                            $scope.errorDB
-                        );
-                        //　テーブルデータの取得処理
-                        //$scope.getPeopleData($scope.db);
-                        //$scope.createDB($scope.db);  
-                        return true;
-                    // Peopleテーブルなし
-                    } else {
-                        // データベース・テーブル作成処理
-                            db.transaction((function (tx) { // テーブル作成
-                                tx.executeSql($scope.query.dropTabelPeople);
-                                tx.executeSql($scope.query.createTabelPeople);
-                                tx.executeSql($scope.query.insertTabelPeople);
-                            }),
-                            // 
-                            $scope.errorDB,             // テーブル作成失敗
-                            (function(tx, results) {    // テーブル作成、空レコード作成成功
-                                // トップページのままでOK
-                                // Todo初期処理で他になにかあれば記載
-                                
-                                // トップページでボタンを表示
-                                $scope.signinStatus = true;
-                                $scope.$apply(); 
-                            }));
-                            
-                            
-                        return false;
-                    }
-                }), $scope.errorDB);
-        }), $scope.errorDB);
-    };
-    // データベースオブジェクト取得
-    $scope.getDB = function(){
-        return window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
-    };
-    // データベースのエラー時の処理（アラート）
-    $scope.errorDB = function (err) {
-        console.log("SQL 実行中にエラーが発生しました: " + err.code);
-        $scope.alert('データベースエラー', true);
-		// トップページでボタンを表示
-		$scope.signinStatus = true;
-		$scope.$apply(); 
-    };
-    // ピープルテーブルの更新
-    $scope.updatePeople = function(){
-        // データベースオブジェクト取得
-        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
-        // スコアを更新
-        db.transaction($scope.exePeopleUpdate, $scope.errorDB);
-    };
-    // ピープルテーブルの削除
-    $scope.deletePeople = function(){
-        // データベースオブジェクト取得
-        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
-        // ピープルテーブルを削除
-        db.transaction($scope.exePeopleDelete, $scope.errorDB);    
-    };
-    // ピープルテーブルの更新
-    $scope.exePeopleUpdate = function (tx) {
-        tx.executeSql(
-            $scope.query.updateTabelPeople
-            + '_id = "'          + $scope.people._id             + '"'
-            + ',peopleID = "'    + $scope.people.peopleID        + '"'  
-            + ',mail     = "'    + $scope.people.mail            + '"'
-            + ',password = "'    + $scope.people.password        + '"'
-            + ',nicname  = "'    + $scope.people.nicname         + '"' 
-            + ',imageURL = "'    + $scope.people.imageURL        + '"' 
-            + ',sex      = "'    + $scope.people.sex             + '"'
-            + ',birthDay = "'    + $scope.people.birthDay        + '"'
-            + ',pref     = "'    + $scope.people.pref            + '"'
-            + ',city     = "'    + $scope.people.city            + '"'
-            + ',appeal   = "'    + $scope.people.appeal          + '"'
-            + ',phrase   = "'    + $scope.people.phrase          + '"'
-            + ',auth     = "'    + $scope.people.auth            + '"'
-            + ',token    = "'    + $scope.people.token           + '"'
-            + ',loging   = "'    + $scope.people.loging          + '"'
-            + ',updated  = "'    + $scope.people.updated         + '"'
-            + ',created  = "'    + $scope.people.created         + '"'
-        );
-    };
-    // ピープルテーブルの削除
-    $scope.exePeopleDelete = function (tx) {
-        tx.executeSql($scope.query.dropTabelPeople);
-        tx.executeSql($scope.query.createTabelPeople);
-        tx.executeSql($scope.query.insertTabelPeople);
-    };
-    $scope.dialogs = {};
-    $scope.msgDialog = function(dlg) {
-        if (!$scope.dialogs[dlg]) {
-            ons.createDialog(dlg).then(function(dialog) {
-                $scope.dialogs[dlg] = dialog;
-                dialog.show();
-            });
-        } else {
-          $scope.dialogs[dlg].show();
-        }
-    };
-    
-  
-    // ピープルデータをDBから取得
-    $scope.getPeople = function(){
-        // データベースオブジェクト取得
-        var db = window.openDatabase($scope.conf.database_name, $scope.conf.database_version, $scope.conf.database_displayname, $scope.conf.database_size);
-        // ピープルデータの取得に成功
-        db.transaction(
-            (function (tx) {
-                tx.executeSql(
-                    $scope.query.selectTabelPeople, [], 
-                        (function(tx, results) {
-                            $scope.people = results.rows.item(0);
-                            //return $scope.people;
-                        }), $scope.errorDB);
-                }), 
-            $scope.errorDB
-        );
-    };
-    
-    /******************************************************************    
-     *  サインイン[signin.html]
-     *******************************************************************/
-    $scope.signin = function(modalFlag){
-
-        // メールチェック
-        if (angular.isUndefined($scope.people.mail)){
-           $scope.alert("メールアドレスを確認しください", true);
-           return false;
-        }
-
-        // パスワード
-        if (angular.isUndefined($scope.people.password)){
-            $scope.alert("パスワードを確認しください", true);
-            return false;
-        }
-        
-        if (modalFlag) {
-            // モーダル表示
-            modal.show();
-        }
-        
-        
-        setTimeout(function() {
-            $http({
-                method: 'POST',
-                url : $scope.webAPI.URL + $scope.webAPI.people + $scope.webAPI.signin,
-                headers: { 'Content-Type': 'application/json' },
-                data: $scope.people,
-            }).success(function(data, status, headers, config) {
-                   
-                    // サインインが完了
-                    $scope.people.peopleID     = data.data.peopleID;
-                    $scope.people._id          = data.data._id;
-                    $scope.people.mail         = data.data.mail;
-                    $scope.people.password     = data.data.password;
-                    $scope.people.nicname      = data.data.nicname;
-                    $scope.people.imageURL     = angular.isUndefined(data.data.imageURL) ? 'http://file.local-c.com/uploads/mimicry/noimage.png' : data.data.imageURL;
-                    $scope.people.nicname      = data.data.nicname;
-                    $scope.people.sex          = data.data.sex;
-                    $scope.people.birthDay     = angular.isUndefined(data.data.birthDay) ? '' : data.data.birthDay;
-                    $scope.people.pref         = angular.isUndefined(data.data.pref) ? '' : data.data.pref;
-                    $scope.people.appeal       = angular.isUndefined(data.data.appeal) ? '' : data.data.appeal;
-                    $scope.people.phrase       = angular.isUndefined(data.data.phrase) ? '' : data.data.phrase;
-                    $scope.people.auth         = data.data.auth;
-                    $scope.people.token        = data.data.token;
-                    $scope.people.loging       = data.data.loging;
-                    $scope.people.updated      = data.data.updated;
-                    $scope.people.created      = data.data.created;
-                    $scope.people.boards       = angular.isUndefined(data.data.boards) ? [] : data.data.boards;
-                    // ピープルテーブルへ保存
-                    $scope.updatePeople();
-                    
-                    
-				
-                    // メール、パスワードあり、認証あり、最終ログインが２ヶ月以内
-                    if ($scope.people.peopleID == "1" || $scope.people.peopleID == "2") {
-                        // メインへ遷移
-                        $scope.options.people = $scope.people;
-                        $scope.movePage($scope.page.menu, $scope.people);
-						
-                    } else {
-						
-						$scope.movePage($scope.page.login, $scope.people);
-                        // トップページでボタンを表示
-                        $scope.signinStatus = true;
-                        $scope.$apply();   
-                    }
-
-            }).error(function(data, status, headers, config) {
-                
-                // モーダル非表示
-                modal.hide();
-                
-                
-                if (!$scope.signoutFlag) {
-                    $scope.alert('サインインに失敗しました。',true);
-                } 
-                //     
-                
-                // トップページでボタンを表示
-                $scope.signinStatus = true;
-                //$scope.$apply();
-            });
-       }, 3000);
-        
-    };
-
-	$scope.getMsgList = function(roomID, lastMsgID){
-        
-        //console.log($scope.webAPI.URL + $scope.webAPI.msg + $scope.webAPI.list + '/' + roomID + '/' + lastMsgID)
-        // APIから取得？
-        // トークリストを取得 
-        $http({
-            method: 'GET',
-            url : $scope.webAPI.URL + $scope.webAPI.msg + $scope.webAPI.list + '/' + roomID + '/' + lastMsgID,
-            headers: { 'Content-Type': 'application/json' },
-            data: null,
-        }).success(function(data, status, headers, config) {
-
-            // 配列の入れ替え作業保存
-            angular.forEach(data.data, function (msg, key) {
-                if (msg.msg != "join") {
-                    $scope.talkList.unshift(msg);    
-                }
-            });
-            
-            // 最下部へスクロール
-            $scope.scrollMsg(400);
-            
-            // トーク画面へ遷移
-            $scope.movePage($scope.page.talk, $scope.options);
-            
-    
-            var element = document.getElementsByClassName("timeline-li");
-            for (var i=0;i<element.length;i++) {
-                console.log(element[i].style.borderBottom);
-              element[i].style.borderBottom = "none"
-            }
-            
-            
-            // 既読にする
-            $scope.readMsg(roomID);
-            
-
-        }).error(function(data, status, headers, config) {
-
-            $scope.alert('トークの取得に失敗しました。',true);
-        });
-        
-        
-    };    
-   
-   
-    $scope.convertLink  = function (input) {
-        input.replace(/"/g, '&quot;').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-        //input = input.replace(/\n|\r/g, '<br>')
-        var regexp_url = /((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))/g; // ']))/;
-        var regexp_makeLink = function(all, url, h, href) {
-            return '<div ng-click="openWindow(\'h' + href + '\');">' + url + '</div>';
-            //return '<a href="#" ng-click="alert(1)">' + url + '</a>';
-            //return '<a href="h' + href + '" target="_blank">' + url + '</a>';
-        }
-        return $sce.trustAsHtml(input.replace(regexp_url, regexp_makeLink));
-    }
-    
-	
-	
-	
-	
-	
-	 /******************************************************************
-     *  レポート一覧[report.html] sboard
-     *******************************************************************/
-	$scope.initReport = function() {
-        $scope.getReport($scope.boardListLimit, 0, true);
-        
-    };
-    $scope.loadReport = function($done) {
-        
-        $timeout(function() {        
-            $scope.getReports(100, 0, true, function(){
-                // コールバックしてDONE
-                $done();
-            });
-        }, 1000);
-    };
-    $scope.boardMsg = {
-        peopleID    : "",
-        nicname     : "",
-        imageURLTo  : "",
-        boardIDTo   : "",
-        peopleIDTo  : "",
-        nicnameTo   : '',
-        inline      : "",
-        desc        : ""
-    };    
-    $scope.reportCount = 100;
-    $scope.reportItemHeight = 150;
-    $scope.reports = [];
-    $scope.getReports = function (limit, offset, refresh, callback){
-               
-        //console.log($scope.seachParam);
-        $http({
-            method: 'GET',
-            url : $scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.list + "/?limit=" + limit + "&offset=" + offset + $scope.getSearchParam(),
-            headers: { 'Content-Type': 'application/json' },
-        }).success(function(data, status, headers, config) {
-            
-            if(refresh) {
-                $scope.boards = data.data;
-            } else {
-                // 配列の入れ替え作業保存
-                angular.forEach(data.data, function (board, key) {
-                    $scope.boards.push(board);
-                });
-            }
-            // データをセット
-            
-            $scope.isLoading = false;
-            
-        }).error(function(data, status, headers, config) {
-            // 登録済みのエラー
-            $scope.alert("トーク一覧取得エラー", true);
-            // モーダル非表示
-            modal.hide();
-        }).finally(function() {
-            // ボードの処理が終わったらコールバック
-            callback();
-        });
-
-    };
     /******************************************************************
      *  ボード一覧[board.html] sboard
      *******************************************************************/
     $scope.initBoard = function() {
+		$scope.boards = [];
         $scope.getBoards($scope.boardListLimit, 0, true);
         
     };
-    $scope.loadBoard = function($done) {
-        
-        $timeout(function() {        
-            $scope.getBoards(100, 0, true, function(){
-                // コールバックしてDONE
-                $done();
-            });
-        }, 1000);
-    };
-    $scope.boardMsg = {
-        peopleID    : "",
-        nicname     : "",
-        imageURLTo  : "",
-        boardIDTo   : "",
-        peopleIDTo  : "",
-        nicnameTo   : '',
-        inline      : "",
-        desc        : ""
-    };    
     $scope.boardCount = 100;
     $scope.boardItemHeight = 150;
     $scope.boards = [];
@@ -741,96 +284,70 @@ module.controller('adminCtrl', function($scope, $http, $sce, $q, $anchorScroll, 
             }
           }
         });
-    }
-    
-   
-    /******************************************************************
-     *  プロフィール表示[profile.html] 
-     *******************************************************************/
-    
-    $scope.profile = {
-        people     : null,
-        boards     : [],
-        boardCount : 0,
-        pickCount  : 0,
-        pickerCount: 0
     };
-    $scope.pushProfile = function(people) {
-        $scope.profile.people = people;
-        
-        // プロフィールのボード情報を取得
-        $scope.getProfileBoards(people, "", function(){
+	
+	// 退会 People削除
+    $scope.removePeople = function(peopleID) {
 
-            // ピープルのカウント情報取得
-            $scope.getProfileCount(people, function(){
-                
-                // プロフィールへ遷移
-                $scope.movePage($scope.page.profile, $scope.options);
+        // トークリストを取得 
+        $http({
+            method: 'GET',
+            url : $scope.webAPI.URL + $scope.webAPI.people +  $scope.webAPI.delete + '/' + peopleID,
+            headers: { 'Content-Type': 'application/json' },
+            data: null,
+        }).success(function(data, status, headers, config) {
+            
+            ons.notification.alert({
+                title: '',
+                message: 'Peopleしました。'
+            });
+
+        }).error(function(data, status, headers, config) {
+            ons.notification.alert({
+                title: '',
+                message: 'People削除に失敗しました。'
             });
         });
-        
-        // プロフィールへ遷移
-        //$scope.movePage($scope.page.profile, $scope.options);
-        //$scope.$apply();
     };
-    // ピープルのボードを取得
-    $scope.getProfileBoards = function(people, boardID, callback) {
-        var bid = ""
-        if (!angular.isUndefined(boardID) && boardID != "") {
-            bid = "&boardID=" + boardID;
-        }
+    
+  	$scope.initReport = function() {
+		$scope.reports = [];
+        $scope.getReport(100, 0, true);
         
-        //http://localhost:3000/spika/v1/board/list/?boardID=7&peopleID=1
+    };
+    $scope.reports = [];
+    $scope.getReport = function (limit, offset, refresh){
+               
+        //console.log($scope.seachParam);
         $http({
             method: 'GET',
-            url : $scope.webAPI.URL + $scope.webAPI.board + $scope.webAPI.list + "/?peopleID=" + people.peopleID + bid,
+            url : $scope.webAPI.URL + $scope.webAPI.report + $scope.webAPI.list + "/?limit=" + limit + "&offset=" + offset + $scope.getSearchParam(),
             headers: { 'Content-Type': 'application/json' },
-            data: null,
         }).success(function(data, status, headers, config) {
             
-            if (!angular.isUndefined(boardID) && boardID != "") {
-                $scope.profile.boards.push(data.data);
+            if(refresh) {
+                $scope.reports = data.data;
             } else {
-                $scope.profile.boards = data.data;
+                // 配列の入れ替え作業保存
+                angular.forEach(data.data, function (board, key) {
+                    $scope.reports.push(board);
+                });
             }
-             
+            // データをセット
+            
+            $scope.isLoading = false;
             
         }).error(function(data, status, headers, config) {
             // 登録済みのエラー
-            $scope.alert("プロフィールボードの取得エラー", true);
-
+            $scope.alert("レポート覧取得エラー", true);
+            // モーダル非表示
+            modal.hide();
         }).finally(function() {
-            // ボードの処理が終わったらコールバック
-            callback();
+           
         });
-        
-    };
-    // ピープルの各カウントを取得
-    $scope.getProfileCount = function(people, callback) {
-        
-        $http({
-            method: 'GET',
-            url : $scope.webAPI.URL + $scope.webAPI.people + $scope.webAPI.count + "/" + people.peopleID,
-            headers: { 'Content-Type': 'application/json' },
-            data: null,
-        }).success(function(data, status, headers, config) {
-            
-            
-            if (data.code == 200) {
-                $scope.profile.boardCount  = data.data.boardCount;
-                $scope.profile.pickCount   = data.data.pickCount;
-                $scope.profile.pickerCount = data.data.pickerCount;
-            }
-        }).error(function(data, status, headers, config) {
-            // 登録済みのエラー
-            $scope.alert("プロフィールのカウント取得エラー", true);
 
-        }).finally(function() {
-            // ボードの処理が終わったらコールバック
-            callback();
-        });
-        
     };
+    
                         
 });  
 

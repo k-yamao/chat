@@ -1,21 +1,16 @@
 <ons-page>
 <div class="login-form">
-	<ons-button modifier="large" class="login-button" ng-click="movePage('a-report.html');">レポート</ons-button>
+	
+	 <div class="logo"></div>
+	<ons-button modifier="large" class="login-button" ng-click="adminNavigator.pushPage('admin_report.html');">レポート</ons-button>
     <br>
-	<ons-button modifier="large" class="login-button" ng-click="movePage('a-msg.html');">メッセージ</ons-button>
+	<ons-button modifier="large" class="login-button" ng-click="adminNavigator.pushPage('admin_board.html');">ボード、ピープルの確認、削除</ons-button>
     <br>
-    <ons-button modifier="large" class="login-button" ng-click="movePage('a-people.html');">ピープル</ons-button>
+	
+	<a href="/"><ons-button modifier="large" class="login-button" ng-click="">ホーム</ons-button></a>
     <br>
-    <ons-button modifier="large" class="login-button" ng-click="movePage('signup.html');">新規登録</ons-button>
-    <br>
-    <ons-button modifier="large" class="login-button" ng-click="movePage('signin.html');">ログイン</ons-button>
-    <br>
-    <ons-button modifier="large" class="login-button" ng-click="movePage('setting.html');">設定</ons-button>
-    <br>
-   
-    <ons-button modifier="large" class="login-button" ng-click="movePage('list.html');">list</ons-button>
     
-</div>
+	</div>
 <ons-modal var="modal">
   <ons-icon icon="ion-load-c" spin="true"></ons-icon>
   <br>
@@ -23,6 +18,17 @@
 </ons-modal>
 
 <style>
+.logo {
+   width: 200px;
+   height: 200px;
+   background-image: url("img/street_logo_200x200.png");
+   //background-image: url("img/street_logo_200x200_f9f9f9.png");
+   margin-left: auto;
+   margin-right: auto;
+	margin-bottom: 50px;
+   border: solid 1px #e9e9e9;
+}
+
 .login-form {
   text-align: center;
   width: 80%;

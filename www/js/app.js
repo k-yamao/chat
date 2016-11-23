@@ -386,6 +386,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                                             $scope.signin(false);
                                         } else {
 
+											
+
                                             // トップページでボタンを表示
                                             $scope.signinStatus = true;
                                             $scope.$apply();   
@@ -440,7 +442,8 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
                             (function(tx, results) {    // テーブル作成、空レコード作成成功
                                 // トップページのままでOK
                                 // Todo初期処理で他になにかあれば記載
-                                
+								
+								
                                 // トップページでボタンを表示
                                 $scope.signinStatus = true;
                                 $scope.$apply(); 
@@ -518,7 +521,39 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
           $scope.dialogs[dlg].show();
         }
     };
-    
+	
+	// 新規登録画面への遷移
+	$scope.regist = function() {
+		
+		ons.notification.confirm({
+		  message: 'Streetを利用するには、利用規約への同意が必要です。',
+		  // もしくは messageHTML: '<div>HTML形式のメッセージ</div>',
+		  title: '利用規約の確認',
+		  buttonLabels: ['同意する', '同意しない', '利用規約'],
+		  animation: 'default', // もしくは'none'
+		  primaryButtonIndex: 1,
+		  cancelable: true,
+		  callback: function(index) {
+		
+			  if (index == 0) {
+				  // 同意する
+				  $scope.movePage('signin.html');
+			  } else if (index == 1) {
+				  // 同意しない
+				  return false;
+			  } else if (index == 2) {
+				  // 利用規約
+				window.open('http://street.local-c.com/rule.html', '_blank', 'location=yes');  
+			  }
+			// -1: キャンセルされた
+			// 0-: 左から0ではじまるボタン番号
+			  
+			  
+			  
+		  }
+		});
+		
+	};   
     // プロフィール写真を設定するとき処理
     $scope.snapPicture = function(type) {
 		if ($scope.device.os != "etc") {
