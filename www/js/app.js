@@ -537,7 +537,7 @@ module.controller('mainCtrl', function($scope, $http, $sce, $q, $anchorScroll, $
 		
 			  if (index == 0) {
 				  // 同意する
-				  $scope.movePage('signin.html');
+				  $scope.movePage('signup.htm');
 			  } else if (index == 1) {
 				  // 同意しない
 				  return false;
